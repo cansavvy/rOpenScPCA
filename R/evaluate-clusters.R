@@ -133,8 +133,10 @@ calculate_purity <- function(
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
-#' @param clusters A vector of cluster ids, typically a numeric factor variable, obtained
-#'   by previously clustering the PCs.
+#' @param cluster_df A data frame that contains at least the columns `cell_id` and
+#'  `cluster`. The `cell_id` values should match either the PC matrix row names,
+#'  or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
+#'  the `rOpenScPCA::calculate_clusters()` function.
 #' @param replicates Number of bootstrap replicates to perform. Default is 20.
 #' @param seed Random seed
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
@@ -159,7 +161,7 @@ calculate_purity <- function(
 #' # and setting a seed for reproducibility
 #' cluster_df <- calculate_clusters(sce_object, seed = 11)
 #' # Second, calculate cluster stability using default parameters
-#' stability_df <- calculate_stability(sce_object, cluster_df$clusters, seed = 11)
+#' stability_df <- calculate_stability(sce_object, cluster_df, seed = 11)
 #'
 #'
 #' # First, cluster PCs from a SingleCellExperiment object using default parameters
@@ -168,7 +170,7 @@ calculate_purity <- function(
 #' # Second, calculate cluster stability using default parameters and 50 replicates
 #' stability_df <- calculate_stability(
 #'   sce_object,
-#'   cluster_df$clusters,
+#'   cluster_df,
 #'   replicates = 50,
 #'   seed = 11
 #' )
@@ -186,7 +188,7 @@ calculate_purity <- function(
 #' # for the initial clustering
 #' stability_df <- calculate_stability(
 #'   sce_object,
-#'   cluster_df$clusters,
+#'   cluster_df,
 #'   algorithm = "leiden",
 #'   resolution = 0.1,
 #'   seed = 11
@@ -194,7 +196,7 @@ calculate_purity <- function(
 #' }
 calculate_stability <- function(
     x,
-    clusters,
+    cluster_df,
     replicates = 20,
     seed = NULL,
     pc_name = NULL,
@@ -206,10 +208,14 @@ calculate_stability <- function(
   # ensure we have a matrix
   pca_matrix <- prepare_pc_matrix(x, pc_name = pc_name)
 
-  # check clusters and matrix compatibility
+  # Extract vector of clusters, ensuring same order as pca_matrix
+  rownames(cluster_df) <- cluster_df$cell_id
+  clusters <- cluster_df[rownames(pca_matrix),]$cluster
+
+  # check that we have the right number of clusters after ensuring correct order
   stopifnot(
-    "The number of rows in the matrix must equal the length of the clusters vector." =
-      nrow(pca_matrix) == length(clusters)
+    "Could not extract clusters from cluster_df due to mismatch with PCA matrix." =
+      !any(is.na(clusters))
   )
 
   # calculate ARI for each cluster result bootstrap replicate
