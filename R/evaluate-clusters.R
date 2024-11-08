@@ -76,10 +76,14 @@ calculate_silhouette <- function(
 #' @param x Either a matrix of principal components (PCs), or a SingleCellExperiment
 #'  or Seurat object containing PCs. If a matrix is provided, rows should be cells
 #'  and columns should be PCs, and row names should be cell ids (e.g., barcodes).
-#' @param cluster_df A data frame that contains at least the columns `cell_id` and
-#'  `cluster`. The `cell_id` values should match either the PC matrix row names,
-#'  or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
-#'  the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_df A data frame that contains at least two columns: one representing
+#'   unique cell ids called `cell_id`, and one containing cluster assignments,
+#'   by default called `cluster`, though this can be customized (see the
+#'   `cluster_col` argument). The `cell_id` values should match either the PC
+#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
+#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_col The name of the column in `cluster_df` which contains cluster
+#'   assignments. "cluster" is assumed by default.
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
@@ -99,18 +103,19 @@ calculate_silhouette <- function(
 calculate_purity <- function(
     x,
     cluster_df,
+    cluster_col = "cluster",
     pc_name = NULL,
     ...) {
   x <- prepare_pc_matrix(x, pc_name)
 
-  expected_df_names <- c("cell_id", "cluster")
+  expected_df_names <- c("cell_id", cluster_col)
   stopifnot(
-    "Expected columns 'cell_id' and 'cluster' in cluster_df." =
+    "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
   )
 
   purity_df <- x |>
-    bluster::neighborPurity(cluster_df$cluster) |>
+    bluster::neighborPurity(cluster_df[[cluster_col]]) |>
     as.data.frame() |>
     tibble::rownames_to_column("cell_id")
 

@@ -51,6 +51,20 @@ test_that("calculate_purity works as expected", {
 
 
 
+test_that("calculate_purity works as expected with non-default cluster column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+  df <- calculate_purity(test_mat, cluster_df, cluster_col = "clusters")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "purity", "maximum")
+  )
+  expect_equal(df$clusters, cluster_df$clusters)
+})
+
+
+
 
 
 test_that("calculate_stability works as expected with defaults", {
