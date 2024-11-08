@@ -88,8 +88,16 @@ test_that("calculate_stability works as expected with object and pc_name", {
 
 
 test_that("calculate_stability errors as expected", {
+
+  # cluster_df too short
   expect_error({
-    # mismatched cluster vector length
     calculate_stability(test_mat, cluster_df[1:5,])
+  })
+
+  # cluster_df too long
+  cluster_df_extra <- cluster_df |>
+    tibble::add_row(cell_id = "extra_barcode")
+  expect_error({
+    calculate_stability(test_mat, cluster_df_extra)
   })
 })

@@ -208,15 +208,17 @@ calculate_stability <- function(
   # ensure we have a matrix
   pca_matrix <- prepare_pc_matrix(x, pc_name = pc_name)
 
+  # ensure pca matrix and cluster df compatibility
+  stopifnot(
+    "The cluster dataframe must have the same number of rows as the PCA matrix." =
+      nrow(pca_matrix) == nrow(cluster_df),
+    "Cell ids in the cluster dataframe must match the PCA matrix rownames." =
+      length(setdiff(rownames(pca_matrix), cluster_df$cell_id)) == 0
+  )
+
   # Extract vector of clusters, ensuring same order as pca_matrix
   rownames(cluster_df) <- cluster_df$cell_id
   clusters <- cluster_df[rownames(pca_matrix),]$cluster
-
-  # check that we have the right number of clusters after ensuring correct order
-  stopifnot(
-    "Could not extract clusters from cluster_df due to mismatch with PCA matrix." =
-      !any(is.na(clusters))
-  )
 
   # calculate ARI for each cluster result bootstrap replicate
   all_ari_df <- 1:replicates |>
