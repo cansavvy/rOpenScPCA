@@ -6,7 +6,7 @@
 \usage{
 calculate_stability(
   x,
-  clusters,
+  cluster_df,
   replicates = 20,
   seed = NULL,
   pc_name = NULL,
@@ -19,8 +19,10 @@ either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 ids (e.g., barcodes).}
 
-\item{clusters}{A vector of cluster ids, typically a numeric factor variable, obtained
-by previously clustering the PCs.}
+\item{cluster_df}{A data frame that contains at least the columns `cell_id` and
+`cluster`. The `cell_id` values should match either the PC matrix row names,
+or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
+the `rOpenScPCA::calculate_clusters()` function.}
 
 \item{replicates}{Number of bootstrap replicates to perform. Default is 20.}
 
@@ -64,7 +66,7 @@ to "jaccard" to align with common practice in scRNA-seq analysis.
 # and setting a seed for reproducibility
 cluster_df <- calculate_clusters(sce_object, seed = 11)
 # Second, calculate cluster stability using default parameters
-stability_df <- calculate_stability(sce_object, cluster_df$clusters, seed = 11)
+stability_df <- calculate_stability(sce_object, cluster_df, seed = 11)
 
 
 # First, cluster PCs from a SingleCellExperiment object using default parameters
@@ -73,7 +75,7 @@ cluster_df <- calculate_clusters(sce_object, seed = 11)
 # Second, calculate cluster stability using default parameters and 50 replicates
 stability_df <- calculate_stability(
   sce_object,
-  cluster_df$clusters,
+  cluster_df,
   replicates = 50,
   seed = 11
 )
@@ -91,7 +93,7 @@ cluster_df <- calculate_clusters(
 # for the initial clustering
 stability_df <- calculate_stability(
   sce_object,
-  cluster_df$clusters,
+  cluster_df,
   algorithm = "leiden",
   resolution = 0.1,
   seed = 11
