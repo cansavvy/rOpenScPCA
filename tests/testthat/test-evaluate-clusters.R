@@ -23,6 +23,18 @@ test_that("calculate_silhouette works as expected", {
 })
 
 
+test_that("calculate_silhouette works as expected with non-default cluster column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+  df <- calculate_silhouette(test_mat, cluster_df, cluster_col = "clusters")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "silhouette_width", "other")
+  )
+  expect_equal(df$clusters, cluster_df$clusters)
+})
+
 
 test_that("calculate_purity works as expected", {
   df <- calculate_purity(test_mat, cluster_df)
