@@ -7,10 +7,14 @@
 #' @param x Either a matrix of principal components (PCs), or a SingleCellExperiment
 #'  or Seurat object containing PCs. If a matrix is provided, rows should be cells
 #'  and columns should be PCs, and row names should be cell ids (e.g., barcodes).
-#' @param cluster_df A data frame that contains at least the columns `cell_id` and
-#'  `cluster`. The `cell_id` values should match either the PC matrix row names,
-#'  or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
-#'  the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_df A data frame that contains at least two columns: one representing
+#'   unique cell ids called `cell_id`, and one containing cluster assignments,
+#'   by default called `cluster`, though this can be customized (see the
+#'   `cluster_col` argument). The `cell_id` values should match either the PC
+#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
+#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_col The name of the column in `cluster_df` which contains cluster
+#'   assignments. "cluster" is assumed by default.
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
@@ -19,6 +23,8 @@
 #' - `silhouette_width`, the cell's silhouette width
 #' - `other`, the closest cluster other than the one to which the given cell was assigned
 #' For more information, see documentation for `bluster::approxSilhouette()`
+#'
+#' @importFrom rlang :=
 #'
 #' @export
 #' @examples
@@ -29,25 +35,32 @@
 calculate_silhouette <- function(
     x,
     cluster_df,
+    cluster_col = "cluster",
     pc_name = NULL) {
   x <- prepare_pc_matrix(x, pc_name)
 
-  expected_df_names <- c("cell_id", "cluster")
+  expected_df_names <- c("cell_id", cluster_col)
   stopifnot(
-    "Expected columns 'cell_id' and 'cluster' in the cluster_df." =
+    "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
   )
 
+  cluster_col_symbol <- as.symbol(cluster_col)
+
   silhouette_df <- x |>
-    bluster::approxSilhouette(cluster_df$cluster) |>
+    bluster::approxSilhouette(cluster_df[[cluster_col]]) |>
     as.data.frame() |>
     tibble::rownames_to_column("cell_id") |>
-    dplyr::rename("silhouette_width" = "width")
+    dplyr::rename(
+      "silhouette_width" = "width",
+      # ensure cluster column name matches the one provided
+      {{cluster_col_symbol}} := "cluster"
+    )
 
   # join with cluster_df in this direction, so that columns in
   # cluster_df come first
   silhouette_df <- cluster_df |>
-    dplyr::inner_join(silhouette_df, by = c("cell_id", "cluster"))
+    dplyr::inner_join(silhouette_df, by = c("cell_id", cluster_col))
 
   return(silhouette_df)
 }
