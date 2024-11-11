@@ -26,7 +26,6 @@
 #' - `other`, the closest cluster other than the one to which the given cell was assigned
 #' For more information, see documentation for `bluster::approxSilhouette()`
 #'
-#' @importFrom rlang :=
 #'
 #' @export
 #' @examples
@@ -53,17 +52,14 @@ calculate_silhouette <- function(
   silhouette_df <- x |>
     bluster::approxSilhouette(cluster_df[[cluster_col]]) |>
     as.data.frame() |>
-    tibble::rownames_to_column(cell_id_col) |>
-    dplyr::rename(
-      "silhouette_width" = "width",
-      # ensure cluster column name matches the one provided
-      {{cluster_col_symbol}} := "cluster"
-    )
+    # note this gets renamed later as needed
+    tibble::rownames_to_column("cell_id") |>
+    dplyr::rename("silhouette_width" = "width")
 
-  # join with cluster_df in this direction, so that columns in
-  # cluster_df come first
+  # join with cluster_df in this direction, so that columns in cluster_df come first
+  # also, rename columns to user-specified as needed
   silhouette_df <- cluster_df |>
-    dplyr::inner_join(silhouette_df, by = c(cell_id_col, cluster_col))
+    dplyr::inner_join(silhouette_df, by = setNames(c("cell_id", "cluster"), c(cell_id_col, cluster_col)))
 
   return(silhouette_df)
 }

@@ -32,7 +32,6 @@ Imports:
     methods,
     pdfCluster,
     purrr,
-    rlang,
     SingleCellExperiment,
     tibble,
     tidyr
