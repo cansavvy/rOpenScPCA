@@ -21,10 +21,10 @@
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #'
-#' @return Expanded `cluster_df` data frame with these additional columns:
-#' - `silhouette_width`, the cell's silhouette width
-#' - `other`, the closest cluster other than the one to which the given cell was assigned
-#' For more information, see documentation for `bluster::approxSilhouette()`
+#' @return Expanded `cluster_df` data frame with additional columns `silhouette_width`,
+#'   the cell's silhouette width, and `other`, the closest cluster other than the one
+#'   to which the given cell was assigned. For more information, see documentation for
+#'   `bluster::approxSilhouette()`.
 #'
 #' @importFrom stats setNames
 #'
@@ -91,10 +91,10 @@ calculate_silhouette <- function(
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #' @param ... Additional arguments to pass to `bluster::neighborPurity()`
 #'
-#' @return Expanded `cluster_df` data frame with these additional columns:
-#' - `purity`, the cell's neighborhood purity
-#' - `maximum`, the cluster with the highest proportion of observations neighboring the given cell.
-#' For more information, see documentation for `bluster::neighborPurity()`
+#' @return Expanded `cluster_df` data frame with the additional columns `purity`,
+#'   the cell's neighborhood purity, and `maximum`, the cluster with the highest
+#'   proportion of observations neighboring the given cell. For more information,
+#'   see documentation for `bluster::neighborPurity()`.
 #'
 #' @export
 #' @examples
