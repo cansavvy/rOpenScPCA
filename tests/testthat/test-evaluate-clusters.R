@@ -133,7 +133,7 @@ test_that("calculate_stability warnings argument works", {
 
   # set 1 replicate, otherwise there will be 20 warnings
   expect_warning({
-    df <- calculate_stability(test_mat, cluster_df, replicates = 1, warnings = TRUE)
+    df <- calculate_stability(test_mat, cluster_df, replicates = 1, seed = 1, warnings = TRUE)
   })
 
   expect_silent({
