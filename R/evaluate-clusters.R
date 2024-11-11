@@ -26,6 +26,7 @@
 #' - `other`, the closest cluster other than the one to which the given cell was assigned
 #' For more information, see documentation for `bluster::approxSilhouette()`
 #'
+#' @importFrom stats setNames
 #'
 #' @export
 #' @examples
