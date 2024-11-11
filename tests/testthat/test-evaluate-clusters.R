@@ -113,6 +113,28 @@ test_that("calculate_stability works as expected with object and pc_name", {
 
 
 
+
+test_that("calculate_stability works as expected with non-default cluster column name", {
+
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+
+  # note that we suppress warnings since this calculation done on fake
+  # test data gives expected warnings about ties during the ARI calculation.
+  suppressWarnings({
+    df <- calculate_stability(test_mat, cluster_df, cluster_col = "clusters")
+  })
+
+  expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "clusters"))]
+  expect_setequal(
+    colnames(df),
+    c("replicate", "ari", expected_names)
+  )
+})
+
+
+
+
 test_that("calculate_stability errors as expected", {
 
   # cluster_df too short

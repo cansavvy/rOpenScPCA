@@ -151,10 +151,14 @@ calculate_purity <- function(
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
-#' @param cluster_df A data frame that contains at least the columns `cell_id` and
-#'  `cluster`. The `cell_id` values should match either the PC matrix row names,
-#'  or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
-#'  the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_df A data frame that contains at least two columns: one representing
+#'   unique cell ids called `cell_id`, and one containing cluster assignments,
+#'   by default called `cluster`, though this can be customized (see the
+#'   `cluster_col` argument). The `cell_id` values should match either the PC
+#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
+#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#' @param cluster_col The name of the column in `cluster_df` which contains cluster
+#'   assignments. "cluster" is assumed by default.
 #' @param replicates Number of bootstrap replicates to perform. Default is 20.
 #' @param seed Random seed
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
@@ -215,6 +219,7 @@ calculate_purity <- function(
 calculate_stability <- function(
     x,
     cluster_df,
+    cluster_col = "cluster",
     replicates = 20,
     seed = NULL,
     pc_name = NULL,
@@ -236,7 +241,7 @@ calculate_stability <- function(
 
   # Extract vector of clusters, ensuring same order as pca_matrix
   rownames(cluster_df) <- cluster_df$cell_id
-  clusters <- cluster_df[rownames(pca_matrix),]$cluster
+  clusters <- cluster_df[rownames(pca_matrix), cluster_col]
 
   # calculate ARI for each cluster result bootstrap replicate
   all_ari_df <- 1:replicates |>
@@ -253,7 +258,7 @@ calculate_stability <- function(
         # return df with ari and clustering parameters
         ari_df <- resampled_df |>
           dplyr::slice(1) |>
-          dplyr::select(!c("cell_id", "cluster")) |>
+          dplyr::select(!dplyr::all_of(c("cell_id", "cluster"))) |>
           dplyr::mutate(
             # define this variable here to ensure it's numeric
             replicate = i,
