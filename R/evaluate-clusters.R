@@ -8,13 +8,15 @@
 #'  or Seurat object containing PCs. If a matrix is provided, rows should be cells
 #'  and columns should be PCs, and row names should be cell ids (e.g., barcodes).
 #' @param cluster_df A data frame that contains at least two columns: one representing
-#'   unique cell ids called `cell_id`, and one containing cluster assignments,
-#'   by default called `cluster`, though this can be customized (see the
-#'   `cluster_col` argument). The `cell_id` values should match either the PC
-#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
-#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#'   unique cell ids, and one containing cluster assignments. By default, these columns
+#'   should be named `cell_id` and `cluster` respectively, though this can be customized.
+#'   The cell id column's values should match either the PC matrix row names, or the
+#'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+#'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
 #'   assignments. "cluster" is assumed by default.
+#' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
+#'   ids "cell_id" is assumed by default.
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
@@ -36,10 +38,11 @@ calculate_silhouette <- function(
     x,
     cluster_df,
     cluster_col = "cluster",
+    cell_id_col = "cell_id",
     pc_name = NULL) {
   x <- prepare_pc_matrix(x, pc_name)
 
-  expected_df_names <- c("cell_id", cluster_col)
+  expected_df_names <- c(cell_id_col, cluster_col)
   stopifnot(
     "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
@@ -50,7 +53,7 @@ calculate_silhouette <- function(
   silhouette_df <- x |>
     bluster::approxSilhouette(cluster_df[[cluster_col]]) |>
     as.data.frame() |>
-    tibble::rownames_to_column("cell_id") |>
+    tibble::rownames_to_column(cell_id_col) |>
     dplyr::rename(
       "silhouette_width" = "width",
       # ensure cluster column name matches the one provided
@@ -60,7 +63,7 @@ calculate_silhouette <- function(
   # join with cluster_df in this direction, so that columns in
   # cluster_df come first
   silhouette_df <- cluster_df |>
-    dplyr::inner_join(silhouette_df, by = c("cell_id", cluster_col))
+    dplyr::inner_join(silhouette_df, by = c(cell_id_col, cluster_col))
 
   return(silhouette_df)
 }
@@ -77,13 +80,15 @@ calculate_silhouette <- function(
 #'  or Seurat object containing PCs. If a matrix is provided, rows should be cells
 #'  and columns should be PCs, and row names should be cell ids (e.g., barcodes).
 #' @param cluster_df A data frame that contains at least two columns: one representing
-#'   unique cell ids called `cell_id`, and one containing cluster assignments,
-#'   by default called `cluster`, though this can be customized (see the
-#'   `cluster_col` argument). The `cell_id` values should match either the PC
-#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
-#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#'   unique cell ids, and one containing cluster assignments. By default, these columns
+#'   should be named `cell_id` and `cluster` respectively, though this can be customized.
+#'   The cell id column's values should match either the PC matrix row names, or the
+#'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+#'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
 #'   assignments. "cluster" is assumed by default.
+#' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
+#'   ids "cell_id" is assumed by default.
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
@@ -104,11 +109,12 @@ calculate_purity <- function(
     x,
     cluster_df,
     cluster_col = "cluster",
+    cell_id_col = "cell_id",
     pc_name = NULL,
     ...) {
   x <- prepare_pc_matrix(x, pc_name)
 
-  expected_df_names <- c("cell_id", cluster_col)
+  expected_df_names <- c(cell_id_col, cluster_col)
   stopifnot(
     "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
@@ -117,12 +123,12 @@ calculate_purity <- function(
   purity_df <- x |>
     bluster::neighborPurity(cluster_df[[cluster_col]]) |>
     as.data.frame() |>
-    tibble::rownames_to_column("cell_id")
+    tibble::rownames_to_column(cell_id_col)
 
   # join with cluster_df in this direction, so that columns in
   # cluster_df come first
   purity_df <- cluster_df |>
-    dplyr::inner_join(purity_df, by = c("cell_id"))
+    dplyr::inner_join(purity_df, by = cell_id_col)
 
   return(purity_df)
 }
@@ -152,13 +158,15 @@ calculate_purity <- function(
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
 #' @param cluster_df A data frame that contains at least two columns: one representing
-#'   unique cell ids called `cell_id`, and one containing cluster assignments,
-#'   by default called `cluster`, though this can be customized (see the
-#'   `cluster_col` argument). The `cell_id` values should match either the PC
-#'   matrix row names, or the SingleCellExperiment/Seurat object cell ids.
-#'   Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.
+#'   unique cell ids, and one containing cluster assignments. By default, these columns
+#'   should be named `cell_id` and `cluster` respectively, though this can be customized.
+#'   The cell id column's values should match either the PC matrix row names, or the
+#'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+#'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
 #'   assignments. "cluster" is assumed by default.
+#' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
+#'   ids "cell_id" is assumed by default.
 #' @param replicates Number of bootstrap replicates to perform. Default is 20.
 #' @param seed Random seed
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
@@ -220,6 +228,7 @@ calculate_stability <- function(
     x,
     cluster_df,
     cluster_col = "cluster",
+    cell_id_col = "cell_id",
     replicates = 20,
     seed = NULL,
     pc_name = NULL,
@@ -236,11 +245,11 @@ calculate_stability <- function(
     "The cluster dataframe must have the same number of rows as the PCA matrix." =
       nrow(pca_matrix) == nrow(cluster_df),
     "Cell ids in the cluster dataframe must match the PCA matrix rownames." =
-      length(setdiff(rownames(pca_matrix), cluster_df$cell_id)) == 0
+      length(setdiff(rownames(pca_matrix), cluster_df[[cell_id_col]])) == 0
   )
 
   # Extract vector of clusters, ensuring same order as pca_matrix
-  rownames(cluster_df) <- cluster_df$cell_id
+  rownames(cluster_df) <- cluster_df[[cell_id_col]]
   clusters <- cluster_df[rownames(pca_matrix), cluster_col]
 
   # calculate ARI for each cluster result bootstrap replicate
@@ -258,6 +267,7 @@ calculate_stability <- function(
         # return df with ari and clustering parameters
         ari_df <- resampled_df |>
           dplyr::slice(1) |>
+          # these column names come directly out of calculate_clusters; they are not customized
           dplyr::select(!dplyr::all_of(c("cell_id", "cluster"))) |>
           dplyr::mutate(
             # define this variable here to ensure it's numeric

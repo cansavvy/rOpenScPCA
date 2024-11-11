@@ -36,6 +36,20 @@ test_that("calculate_silhouette works as expected with non-default cluster colum
 })
 
 
+test_that("calculate_silhouette works as expected with non-default cell id column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+  df <- calculate_silhouette(test_mat, cluster_df, cell_id_col = "barcodes")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "silhouette_width", "other")
+  )
+  expect_equal(df$cluster, cluster_df$cluster)
+})
+
+
+
 test_that("calculate_purity works as expected", {
   df <- calculate_purity(test_mat, cluster_df)
 
@@ -64,6 +78,18 @@ test_that("calculate_purity works as expected with non-default cluster column na
 })
 
 
+
+test_that("calculate_purity works as expected with non-default cell id column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+  df <- calculate_purity(test_mat, cluster_df, cell_id_col = "barcodes")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "purity", "maximum")
+  )
+  expect_equal(df$cluster, cluster_df$cluster)
+})
 
 
 
@@ -126,6 +152,25 @@ test_that("calculate_stability works as expected with non-default cluster column
   })
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "clusters"))]
+  expect_setequal(
+    colnames(df),
+    c("replicate", "ari", expected_names)
+  )
+})
+
+
+test_that("calculate_stability works as expected with non-default cell id name", {
+
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+
+  # note that we suppress warnings since this calculation done on fake
+  # test data gives expected warnings about ties during the ARI calculation.
+  suppressWarnings({
+    df <- calculate_stability(test_mat, cluster_df, cell_id_col = "barcodes")
+  })
+
+  expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("barcodes", "cluster"))]
   expect_setequal(
     colnames(df),
     c("replicate", "ari", expected_names)

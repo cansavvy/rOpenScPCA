@@ -8,6 +8,7 @@ calculate_stability(
   x,
   cluster_df,
   cluster_col = "cluster",
+  cell_id_col = "cell_id",
   replicates = 20,
   seed = NULL,
   pc_name = NULL,
@@ -21,14 +22,17 @@ are PCs and rows are cells. If a matrix is provided, it must have row names of c
 ids (e.g., barcodes).}
 
 \item{cluster_df}{A data frame that contains at least two columns: one representing
-unique cell ids called `cell_id`, and one containing cluster assignments,
-by default called `cluster`, though this can be customized (see the
-`cluster_col` argument). The `cell_id` values should match either the PC
-matrix row names, or the SingleCellExperiment/Seurat object cell ids.
-Typically this will be output from the `rOpenScPCA::calculate_clusters()` function.}
+unique cell ids, and one containing cluster assignments. By default, these columns
+should be named `cell_id` and `cluster` respectively, though this can be customized.
+The cell id column's values should match either the PC matrix row names, or the
+SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+output from the `rOpenScPCA::calculate_clusters()` function.}
 
 \item{cluster_col}{The name of the column in `cluster_df` which contains cluster
 assignments. "cluster" is assumed by default.}
+
+\item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
+ids "cell_id" is assumed by default.}
 
 \item{replicates}{Number of bootstrap replicates to perform. Default is 20.}
 
