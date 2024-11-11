@@ -12,6 +12,7 @@ calculate_stability(
   replicates = 20,
   seed = NULL,
   pc_name = NULL,
+  warnings = FALSE,
   ...
 )
 }
@@ -41,6 +42,9 @@ ids "cell_id" is assumed by default.}
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used if a
 matrix is provided. If the name is not provided, the name "PCA" is assumed for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
+
+\item{warnings}{Whether warnings related to distance ties when calculating bootstrap
+clusters should be printed. Default is FALSE.}
 
 \item{...}{Additional arguments to pass to `calculate_clusters()` which calculates
 bootstrapped clusters. Usually, these will be the same arguments used to generate

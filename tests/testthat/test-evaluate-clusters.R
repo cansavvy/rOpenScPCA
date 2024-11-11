@@ -82,6 +82,7 @@ test_that("calculate_purity works as expected with non-default cluster column na
 test_that("calculate_purity works as expected with non-default cell id column name", {
   cluster_df <- cluster_df |>
     dplyr::rename(barcodes = cell_id)
+
   df <- calculate_purity(test_mat, cluster_df, cell_id_col = "barcodes")
 
   expect_setequal(
@@ -94,11 +95,8 @@ test_that("calculate_purity works as expected with non-default cell id column na
 
 
 test_that("calculate_stability works as expected with defaults", {
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df)
-  })
+
+  df <- calculate_stability(test_mat, cluster_df)
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "cluster"))]
   expect_setequal(
@@ -111,11 +109,8 @@ test_that("calculate_stability works as expected with defaults", {
 
 
 test_that("calculate_stability works as expected with different replicates", {
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df, replicates = 2)
-  })
+  df <- calculate_stability(test_mat, cluster_df, replicates = 2)
+
   expect_equal(nrow(df), 2)
 })
 
@@ -124,17 +119,26 @@ test_that("calculate_stability works as expected with different replicates", {
 test_that("calculate_stability works as expected with object and pc_name", {
   reducedDimNames(sce) <- "my_pca"
 
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(
-      sce,
-      cluster_df,
-      replicates = 2,
-      pc_name = "my_pca"
-    )
-  })
+  df <- calculate_stability(
+    sce,
+    cluster_df,
+    replicates = 2,
+    pc_name = "my_pca"
+  )
   expect_equal(nrow(df), 2)
+})
+
+
+test_that("calculate_stability warnings argument works", {
+
+  # set 1 replicate, otherwise there will be 20 warnings
+  expect_warning({
+    df <- calculate_stability(test_mat, cluster_df, replicates = 1, warnings = TRUE)
+  })
+
+  expect_silent({
+    df <- calculate_stability(test_mat, cluster_df)
+  })
 })
 
 
@@ -145,11 +149,7 @@ test_that("calculate_stability works as expected with non-default cluster column
   cluster_df <- cluster_df |>
     dplyr::rename(clusters = cluster)
 
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df, cluster_col = "clusters")
-  })
+  df <- calculate_stability(test_mat, cluster_df, cluster_col = "clusters")
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "clusters"))]
   expect_setequal(
@@ -164,11 +164,7 @@ test_that("calculate_stability works as expected with non-default cell id name",
   cluster_df <- cluster_df |>
     dplyr::rename(barcodes = cell_id)
 
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df, cell_id_col = "barcodes")
-  })
+  df <- calculate_stability(test_mat, cluster_df, cell_id_col = "barcodes")
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("barcodes", "cluster"))]
   expect_setequal(

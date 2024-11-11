@@ -168,6 +168,8 @@ calculate_purity <- function(
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
+#' @param warnings Whether warnings related to distance ties when calculating bootstrap
+#'   clusters should be printed. Default is FALSE.
 #' @param ... Additional arguments to pass to `calculate_clusters()` which calculates
 #'   bootstrapped clusters. Usually, these will be the same arguments used to generate
 #'   the original clusters.
@@ -228,6 +230,7 @@ calculate_stability <- function(
     replicates = 20,
     seed = NULL,
     pc_name = NULL,
+    warnings = FALSE,
     ...) {
   if (!is.null(seed)) {
     set.seed(seed)
@@ -256,7 +259,13 @@ calculate_stability <- function(
         resampled_pca <- pca_matrix[sample_cells, ]
         original_clusters <- clusters[sample_cells]
 
-        resampled_df <- calculate_clusters(resampled_pca, ...)
+        if (warnings) {
+          resampled_df <- calculate_clusters(resampled_pca, ...)
+        } else {
+          suppressWarnings({
+            resampled_df <- calculate_clusters(resampled_pca, ...)
+          })
+        }
 
         ari <- pdfCluster::adj.rand.index(resampled_df$cluster, original_clusters)
 
