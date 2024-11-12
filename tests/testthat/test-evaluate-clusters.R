@@ -14,12 +14,38 @@ test_that("calculate_silhouette works as expected", {
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "silhouette_width", "other")
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
   )
   expect_equal(df$cell_id, rownames(test_mat))
   expect_equal(df$cluster, cluster_df$cluster)
   expect_vector(df$silhouette_width, ptype = numeric())
-  expect_s3_class(df$other, "factor")
+  expect_s3_class(df$silhouette_other, "factor")
+})
+
+
+test_that("calculate_silhouette works as expected with non-default cluster column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+  df <- calculate_silhouette(test_mat, cluster_df, cluster_col = "clusters")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
+  )
+  expect_equal(df$clusters, cluster_df$clusters)
+})
+
+
+test_that("calculate_silhouette works as expected with non-default cell id column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+  df <- calculate_silhouette(test_mat, cluster_df, cell_id_col = "barcodes")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
+  )
+  expect_equal(df$cluster, cluster_df$cluster)
 })
 
 
@@ -29,24 +55,48 @@ test_that("calculate_purity works as expected", {
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "purity", "maximum")
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
   )
   expect_equal(df$cell_id, rownames(test_mat))
   expect_equal(df$cluster, cluster_df$cluster)
   expect_vector(df$purity, ptype = numeric())
-  expect_s3_class(df$maximum, "factor")
+  expect_s3_class(df$maximum_neighbor, "factor")
 })
 
 
 
+test_that("calculate_purity works as expected with non-default cluster column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+  df <- calculate_purity(test_mat, cluster_df, cluster_col = "clusters")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
+  )
+  expect_equal(df$clusters, cluster_df$clusters)
+})
+
+
+
+test_that("calculate_purity works as expected with non-default cell id column name", {
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+
+  df <- calculate_purity(test_mat, cluster_df, cell_id_col = "barcodes")
+
+  expect_setequal(
+    colnames(df),
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
+  )
+  expect_equal(df$cluster, cluster_df$cluster)
+})
+
 
 
 test_that("calculate_stability works as expected with defaults", {
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df)
-  })
+
+  df <- calculate_stability(test_mat, cluster_df)
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "cluster"))]
   expect_setequal(
@@ -59,11 +109,8 @@ test_that("calculate_stability works as expected with defaults", {
 
 
 test_that("calculate_stability works as expected with different replicates", {
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(test_mat, cluster_df, replicates = 2)
-  })
+  df <- calculate_stability(test_mat, cluster_df, replicates = 2)
+
   expect_equal(nrow(df), 2)
 })
 
@@ -72,18 +119,65 @@ test_that("calculate_stability works as expected with different replicates", {
 test_that("calculate_stability works as expected with object and pc_name", {
   reducedDimNames(sce) <- "my_pca"
 
-  # note that we suppress warnings since this calculation done on fake
-  # test data gives expected warnings about ties during the ARI calculation.
-  suppressWarnings({
-    df <- calculate_stability(
-      sce,
-      cluster_df,
-      replicates = 2,
-      pc_name = "my_pca"
-    )
-  })
+  df <- calculate_stability(
+    sce,
+    cluster_df,
+    replicates = 2,
+    pc_name = "my_pca"
+  )
   expect_equal(nrow(df), 2)
 })
+
+
+test_that("calculate_stability warnings argument works", {
+  expect_silent({
+    df <- calculate_stability(test_mat, cluster_df)
+  })
+
+  # only run the next test on lower versions of bluster
+  # 1.16.0 is the Bioconductor 3.20 version, in which warnings were turned off by default.
+  # previous versions of Bioconductor will print a warning here
+  skip_if(packageVersion("bluster") >= "1.16.0")
+
+  # set 1 replicate, otherwise there will be 20 warnings
+  expect_warning({
+    df <- calculate_stability(test_mat, cluster_df, replicates = 1, seed = 1, warnings = TRUE)
+  })
+
+})
+
+
+
+
+test_that("calculate_stability works as expected with non-default cluster column name", {
+
+  cluster_df <- cluster_df |>
+    dplyr::rename(clusters = cluster)
+
+  df <- calculate_stability(test_mat, cluster_df, cluster_col = "clusters")
+
+  expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "clusters"))]
+  expect_setequal(
+    colnames(df),
+    c("replicate", "ari", expected_names)
+  )
+})
+
+
+test_that("calculate_stability works as expected with non-default cell id name", {
+
+  cluster_df <- cluster_df |>
+    dplyr::rename(barcodes = cell_id)
+
+  df <- calculate_stability(test_mat, cluster_df, cell_id_col = "barcodes")
+
+  expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("barcodes", "cluster"))]
+  expect_setequal(
+    colnames(df),
+    c("replicate", "ari", expected_names)
+  )
+})
+
 
 
 

@@ -7,9 +7,12 @@
 calculate_stability(
   x,
   cluster_df,
+  cluster_col = "cluster",
+  cell_id_col = "cell_id",
   replicates = 20,
   seed = NULL,
   pc_name = NULL,
+  warnings = FALSE,
   ...
 )
 }
@@ -19,18 +22,29 @@ either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 ids (e.g., barcodes).}
 
-\item{cluster_df}{A data frame that contains at least the columns `cell_id` and
-`cluster`. The `cell_id` values should match either the PC matrix row names,
-or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
-the `rOpenScPCA::calculate_clusters()` function.}
+\item{cluster_df}{A data frame that contains at least two columns: one representing
+unique cell ids, and one containing cluster assignments. By default, these columns
+should be named `cell_id` and `cluster` respectively, though this can be customized.
+The cell id column's values should match either the PC matrix row names, or the
+SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+output from the `rOpenScPCA::calculate_clusters()` function.}
 
-\item{replicates}{Number of bootstrap replicates to perform. Default is 20.}
+\item{cluster_col}{The name of the column in `cluster_df` which contains cluster
+assignments. The default is "cluster".}
+
+\item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
+ids. The default is "cell_id".}
+
+\item{replicates}{Number of bootstrap replicates to perform. The default is 20.}
 
 \item{seed}{Random seed}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used if a
-matrix is provided. If the name is not provided, the name "PCA" is assumed for
+matrix is provided. If the name is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
+
+\item{warnings}{Whether warnings related to distance ties when calculating bootstrap
+clusters should be printed. The default is FALSE.}
 
 \item{...}{Additional arguments to pass to `calculate_clusters()` which calculates
 bootstrapped clusters. Usually, these will be the same arguments used to generate

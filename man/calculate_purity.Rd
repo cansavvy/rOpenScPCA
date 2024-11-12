@@ -4,29 +4,44 @@
 \alias{calculate_purity}
 \title{Calculate the neighborhood purity of clusters}
 \usage{
-calculate_purity(x, cluster_df, pc_name = NULL, ...)
+calculate_purity(
+  x,
+  cluster_df,
+  cluster_col = "cluster",
+  cell_id_col = "cell_id",
+  pc_name = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Either a matrix of principal components (PCs), or a SingleCellExperiment
 or Seurat object containing PCs. If a matrix is provided, rows should be cells
 and columns should be PCs, and row names should be cell ids (e.g., barcodes).}
 
-\item{cluster_df}{A data frame that contains at least the columns `cell_id` and
-`cluster`. The `cell_id` values should match either the PC matrix row names,
-or the SingleCellExperiment/Seurat object cell ids. Typically this will be output from
-the `rOpenScPCA::calculate_clusters()` function.}
+\item{cluster_df}{A data frame that contains at least two columns: one representing
+unique cell ids, and one containing cluster assignments. By default, these columns
+should be named `cell_id` and `cluster` respectively, though this can be customized.
+The cell id column's values should match either the PC matrix row names, or the
+SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
+output from the `rOpenScPCA::calculate_clusters()` function.}
+
+\item{cluster_col}{The name of the column in `cluster_df` which contains cluster
+assignments. The default is "cluster".}
+
+\item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
+ids. The default is "cell_id".}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used if a
-matrix is provided. If the name is not provided, the name "PCA" is assumed for
+matrix is provided. If the name is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
 
 \item{...}{Additional arguments to pass to `bluster::neighborPurity()`}
 }
 \value{
-Expanded `cluster_df` data frame with these additional columns:
-- `purity`, the cell's neighborhood purity
-- `maximum`, the cluster with the highest proportion of observations neighboring the given cell.
-For more information, see documentation for `bluster::neighborPurity()`
+Expanded `cluster_df` data frame with the additional columns `purity`,
+  the cell's neighborhood purity, and `maximum_neighbor`, the cluster with the
+  highest proportion of observations neighboring the given cell. For more
+  information see documentation for `bluster::neighborPurity()`.
 }
 \description{
 This function uses the `bluster::neighborPurity()` function to calculate the
