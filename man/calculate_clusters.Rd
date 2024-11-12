@@ -26,7 +26,7 @@ have row names of cell ids (e.g., barcodes).}
 
 \item{weighting}{Weighting scheme to use. Must be one of "jaccard" (default), "rank", or "number"}
 
-\item{nn}{Number of nearest neighbors. Default is 10.}
+\item{nn}{Number of nearest neighbors. The default is 10.}
 
 \item{resolution}{Resolution parameter used by louvain and leiden clustering only. Default is 1.}
 
@@ -36,7 +36,7 @@ have row names of cell ids (e.g., barcodes).}
 Only single values for each argument are supported (no vectors or lists).
 See igraph documentation for details on each clustering function: https://igraph.org/r/html/latest}
 
-\item{threads}{Number of threads to use. Default is 1.}
+\item{threads}{Number of threads to use. The default is 1.}
 
 \item{seed}{Random seed to set for clustering.}
 

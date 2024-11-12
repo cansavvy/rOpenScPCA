@@ -14,13 +14,13 @@
 #'   have row names of cell ids (e.g., barcodes).
 #' @param algorithm Clustering algorithm to use. Must be one of "louvain" (default), "walktrap", or "leiden".
 #' @param weighting Weighting scheme to use. Must be one of "jaccard" (default), "rank", or "number"
-#' @param nn Number of nearest neighbors. Default is 10.
+#' @param nn Number of nearest neighbors. The default is 10.
 #' @param resolution Resolution parameter used by louvain and leiden clustering only. Default is 1.
 #' @param objective_function Leiden-specific parameter for whether to use the Constant Potts Model ("CPM"; default) or "modularity"
 #' @param cluster_args List of additional arguments to pass to the chosen clustering function.
 #'   Only single values for each argument are supported (no vectors or lists).
 #'   See igraph documentation for details on each clustering function: https://igraph.org/r/html/latest
-#' @param threads Number of threads to use. Default is 1.
+#' @param threads Number of threads to use. The default is 1.
 #' @param seed Random seed to set for clustering.
 #' @param pc_name Name of principal components slot in provided object. This argument is only used if a SingleCellExperiment
 #'   or Seurat object is provided. If not provided, the SingleCellExperiment object name will default to "PCA" and the
