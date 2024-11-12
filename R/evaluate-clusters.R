@@ -14,7 +14,7 @@
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
-#'   assignments. "cluster" is assumed by default.
+#'   assignments. Default value is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
 #'   ids "cell_id" is assumed by default.
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
@@ -47,8 +47,6 @@ calculate_silhouette <- function(
     "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
   )
-
-  cluster_col_symbol <- as.symbol(cluster_col)
 
   silhouette_df <- x |>
     bluster::approxSilhouette(cluster_df[[cluster_col]]) |>
@@ -118,7 +116,7 @@ calculate_purity <- function(
   )
 
   purity_df <- x |>
-    bluster::neighborPurity(cluster_df[[cluster_col]]) |>
+    bluster::neighborPurity(cluster_df[[cluster_col]], ...) |>
     as.data.frame() |>
     tibble::rownames_to_column(cell_id_col)
 
@@ -260,13 +258,10 @@ calculate_stability <- function(
         resampled_pca <- pca_matrix[sample_cells, ]
         original_clusters <- clusters[sample_cells]
 
-        if (warnings) {
-          resampled_df <- calculate_clusters(resampled_pca, ...)
-        } else {
-          suppressWarnings({
-            resampled_df <- calculate_clusters(resampled_pca, ...)
-          })
-        }
+        resampled_df <- withCallingHandlers(
+          calculate_clusters(resampled_pca, ...),
+          warning = \(w) {if(!warnings) tryInvokeRestart("muffleWarning")}
+        )
 
         ari <- pdfCluster::adj.rand.index(resampled_df$cluster, original_clusters)
 
