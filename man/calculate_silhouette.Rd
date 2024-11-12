@@ -25,7 +25,7 @@ SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 output from the `rOpenScPCA::calculate_clusters()` function.}
 
 \item{cluster_col}{The name of the column in `cluster_df` which contains cluster
-assignments. "cluster" is assumed by default.}
+assignments. Default value is "cluster".}
 
 \item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
 ids "cell_id" is assumed by default.}
@@ -36,9 +36,9 @@ SingleCellExperiment objects, and "pca" for Seurat objects.}
 }
 \value{
 Expanded `cluster_df` data frame with additional columns `silhouette_width`,
-  the cell's silhouette width, and `other`, the closest cluster other than the one
-  to which the given cell was assigned. For more information, see documentation for
-  `bluster::approxSilhouette()`.
+  the cell's silhouette width, and `silhouette_other`, the closest cluster other
+  than the one to which the given cell was assigned. For more information,
+  see documentation for `bluster::approxSilhouette()`.
 }
 \description{
 This function uses the `bluster::approxSilhouette()` function to calculate the

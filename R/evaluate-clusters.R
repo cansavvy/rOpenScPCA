@@ -22,7 +22,7 @@
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #'
 #' @return Expanded `cluster_df` data frame with additional columns `silhouette_width`,
-#'   the cell's silhouette width, and `other`, the closest cluster other
+#'   the cell's silhouette width, and `silhouette_other`, the closest cluster other
 #'   than the one to which the given cell was assigned. For more information,
 #'   see documentation for `bluster::approxSilhouette()`.
 #'
@@ -55,7 +55,10 @@ calculate_silhouette <- function(
     as.data.frame() |>
     # note this gets renamed later as needed
     tibble::rownames_to_column("cell_id") |>
-    dplyr::rename("silhouette_width" = "width")
+    dplyr::rename(
+      "silhouette_width" = "width",
+      "silhouette_other" = "other"
+    )
 
   # join with cluster_df in this direction, so that columns in cluster_df come first
   # also, rename columns to user-specified as needed
@@ -92,9 +95,9 @@ calculate_silhouette <- function(
 #' @param ... Additional arguments to pass to `bluster::neighborPurity()`
 #'
 #' @return Expanded `cluster_df` data frame with the additional columns `purity`,
-#'   the cell's neighborhood purity, and `maximum`, the cluster with the highest
-#'   proportion of observations neighboring the given cell. For more information,
-#'   see documentation for `bluster::neighborPurity()`.
+#'   the cell's neighborhood purity, and `maximum_neighbor`, the cluster with the
+#'   highest proportion of observations neighboring the given cell. For more
+#'   information see documentation for `bluster::neighborPurity()`.
 #'
 #' @export
 #' @examples
@@ -122,7 +125,10 @@ calculate_purity <- function(
   purity_df <- x |>
     bluster::neighborPurity(cluster_df[[cluster_col]], ...) |>
     as.data.frame() |>
-    tibble::rownames_to_column(cell_id_col)
+    tibble::rownames_to_column(cell_id_col) |>
+    dplyr::rename(
+      "maximum_neighbor" = "maximum"
+    )
 
   # join with cluster_df in this direction, so that columns in
   # cluster_df come first

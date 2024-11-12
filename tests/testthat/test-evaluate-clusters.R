@@ -14,12 +14,12 @@ test_that("calculate_silhouette works as expected", {
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "silhouette_width", "other")
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
   )
   expect_equal(df$cell_id, rownames(test_mat))
   expect_equal(df$cluster, cluster_df$cluster)
   expect_vector(df$silhouette_width, ptype = numeric())
-  expect_s3_class(df$other, "factor")
+  expect_s3_class(df$silhouette_other, "factor")
 })
 
 
@@ -30,7 +30,7 @@ test_that("calculate_silhouette works as expected with non-default cluster colum
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "silhouette_width", "other")
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
   )
   expect_equal(df$clusters, cluster_df$clusters)
 })
@@ -43,7 +43,7 @@ test_that("calculate_silhouette works as expected with non-default cell id colum
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "silhouette_width", "other")
+    c(colnames(cluster_df), "silhouette_width", "silhouette_other")
   )
   expect_equal(df$cluster, cluster_df$cluster)
 })
@@ -55,12 +55,12 @@ test_that("calculate_purity works as expected", {
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "purity", "maximum")
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
   )
   expect_equal(df$cell_id, rownames(test_mat))
   expect_equal(df$cluster, cluster_df$cluster)
   expect_vector(df$purity, ptype = numeric())
-  expect_s3_class(df$maximum, "factor")
+  expect_s3_class(df$maximum_neighbor, "factor")
 })
 
 
@@ -72,7 +72,7 @@ test_that("calculate_purity works as expected with non-default cluster column na
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "purity", "maximum")
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
   )
   expect_equal(df$clusters, cluster_df$clusters)
 })
@@ -87,7 +87,7 @@ test_that("calculate_purity works as expected with non-default cell id column na
 
   expect_setequal(
     colnames(df),
-    c(colnames(cluster_df), "purity", "maximum")
+    c(colnames(cluster_df), "purity", "maximum_neighbor")
   )
   expect_equal(df$cluster, cluster_df$cluster)
 })
