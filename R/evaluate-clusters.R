@@ -61,7 +61,7 @@ calculate_silhouette <- function(
     )
 
   # join with cluster_df in this direction, so that columns in cluster_df come first
-  # also, rename columns to user-specified as needed
+  # ensure provided cluster_df column names are used as well
   silhouette_df <- cluster_df |>
     dplyr::inner_join(silhouette_df, by = setNames(c("cell_id", "cluster"), c(cell_id_col, cluster_col)))
 
