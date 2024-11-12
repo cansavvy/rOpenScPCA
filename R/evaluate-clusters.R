@@ -22,9 +22,9 @@
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #'
 #' @return Expanded `cluster_df` data frame with additional columns `silhouette_width`,
-#'   the cell's silhouette width, and `other`, the closest cluster other than the one
-#'   to which the given cell was assigned. For more information, see documentation for
-#'   `bluster::approxSilhouette()`.
+#'   the cell's silhouette width, and `other`, the closest cluster other
+#'   than the one to which the given cell was assigned. For more information,
+#'   see documentation for `bluster::approxSilhouette()`.
 #'
 #' @importFrom stats setNames
 #'
@@ -44,6 +44,8 @@ calculate_silhouette <- function(
 
   expected_df_names <- c(cell_id_col, cluster_col)
   stopifnot(
+    "The cell id column name must be length of 1." = length(cell_id_col) == 1,
+    "The cluster column name must be length of 1." = length(cluster_col) == 1,
     "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
   )
@@ -111,6 +113,8 @@ calculate_purity <- function(
 
   expected_df_names <- c(cell_id_col, cluster_col)
   stopifnot(
+    "The cell id column name must be length of 1." = length(cell_id_col) == 1,
+    "The cluster column name must be length of 1." = length(cluster_col) == 1,
     "Expected columns not present in cluster_df." =
       all(expected_df_names %in% colnames(cluster_df))
   )
@@ -244,6 +248,15 @@ calculate_stability <- function(
       nrow(pca_matrix) == nrow(cluster_df),
     "Cell ids in the cluster dataframe must match the PCA matrix rownames." =
       length(setdiff(rownames(pca_matrix), cluster_df[[cell_id_col]])) == 0
+  )
+
+  # Check columns
+  expected_df_names <- c(cell_id_col, cluster_col)
+  stopifnot(
+    "The cell id column name must be length of 1." = length(cell_id_col) == 1,
+    "The cluster column name must be length of 1." = length(cluster_col) == 1,
+    "Expected columns not present in cluster_df." =
+      all(expected_df_names %in% colnames(cluster_df))
   )
 
   # Extract vector of clusters, ensuring same order as pca_matrix
