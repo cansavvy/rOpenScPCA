@@ -135,6 +135,8 @@ test_that("calculate_stability warnings argument works", {
   })
 
   # only run the next test on lower versions of bluster
+  # 1.16.0 is the Bioconductor 3.20 version, in which warnings were turned off by default.
+  # previous versions of Bioconductor will print a warning here
   skip_if(packageVersion("bluster") >= "1.16.0")
 
   # set 1 replicate, otherwise there will be 20 warnings
