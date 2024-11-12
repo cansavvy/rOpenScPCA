@@ -1,12 +1,14 @@
-# This GHA checks rOpenScPCA using dependencies from the release Bioconductor version
+# This GHA checks rOpenScPCA using the repository's renv environment which records
+#  dependencies from Bioconductor 3.19, the version we expect rOpenScPCA to be most
+#  commonly used with
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - feature/*
 
-name: R-CMD-CHECK-release
+name: R-CMD-CHECK-renv
 
 jobs:
   R-CMD-check-renv:
@@ -20,10 +22,13 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: 4.4.0
+          r-version: "renv"
           use-public-rspm: true
 
-      - name: Set up dependencies
+      - name: Set up renv and install packages
+        uses: r-lib/actions/setup-renv@v2
+
+      - name: Install additional dependencies needed to check the package
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
