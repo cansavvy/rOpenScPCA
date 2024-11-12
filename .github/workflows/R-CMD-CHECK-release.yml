@@ -1,4 +1,4 @@
-# This GHA checks rOpenScPCA using dependencies from the release Bioconductor version
+# This GHA checks rOpenScPCA using dependencies using current packages from CRAN and Bioconductor
 
 on:
   push:
