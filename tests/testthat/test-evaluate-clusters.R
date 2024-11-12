@@ -130,15 +130,18 @@ test_that("calculate_stability works as expected with object and pc_name", {
 
 
 test_that("calculate_stability warnings argument works", {
+  expect_silent({
+    df <- calculate_stability(test_mat, cluster_df)
+  })
+
+  # only run the next test on lower versions of bluster
+  skip_if(packageVersion("bluster") >= "1.16.0")
 
   # set 1 replicate, otherwise there will be 20 warnings
   expect_warning({
     df <- calculate_stability(test_mat, cluster_df, replicates = 1, seed = 1, warnings = TRUE)
   })
 
-  expect_silent({
-    df <- calculate_stability(test_mat, cluster_df)
-  })
 })
 
 
