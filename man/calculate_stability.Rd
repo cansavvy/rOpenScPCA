@@ -35,7 +35,7 @@ assignments. The default is "cluster".}
 \item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
 ids. The default is "cell_id".}
 
-\item{replicates}{Number of bootstrap replicates to perform. Default is 20.}
+\item{replicates}{Number of bootstrap replicates to perform. The default is 20.}
 
 \item{seed}{Random seed}
 
@@ -44,7 +44,7 @@ matrix is provided. If the name is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
 
 \item{warnings}{Whether warnings related to distance ties when calculating bootstrap
-clusters should be printed. Default is FALSE.}
+clusters should be printed. The default is FALSE.}
 
 \item{...}{Additional arguments to pass to `calculate_clusters()` which calculates
 bootstrapped clusters. Usually, these will be the same arguments used to generate

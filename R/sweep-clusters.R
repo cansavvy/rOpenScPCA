@@ -24,14 +24,14 @@
 #' Provide a vector of unique values to vary this parameter. Options include "jaccard" (default),
 #'   "rank", or "number"
 #' @param nn Number of nearest neighbors to consider when sweeping parameters.
-#'  Provide a vector of unique values to vary this parameter. Default is 10.
+#'  Provide a vector of unique values to vary this parameter. The default is 10.
 #' @param resolution Resolution parameter used by louvain and leiden clustering only.
-#'   Provide a vector of unique values to vary this parameter. Default is 1.
+#'   Provide a vector of unique values to vary this parameter. The default is 1.
 #' @param objective_function Leiden-specific parameter for whether to use the
 #'   Constant Potts Model ("CPM"; default) or "modularity". Provide a vector of unique values
 #'   to vary this parameter.
 #' @param seed Random seed to set for clustering.
-#' @param threads Number of threads to use. Default is 1.
+#' @param threads Number of threads to use. The default is 1.
 #' @param pc_name Name of principal components slot in provided object. This argument is only used
 #'   if a SingleCellExperiment or Seurat object is provided. If not provided, the SingleCellExperiment
 #'   object name will default to "PCA" and the Seurat object name will default to "pca".

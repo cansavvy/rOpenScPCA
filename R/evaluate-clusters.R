@@ -172,13 +172,13 @@ calculate_purity <- function(
 #'   assignments. The default is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
 #'   ids. The default is "cell_id".
-#' @param replicates Number of bootstrap replicates to perform. Default is 20.
+#' @param replicates Number of bootstrap replicates to perform. The default is 20.
 #' @param seed Random seed
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
 #'   matrix is provided. If the name is not provided, the name "PCA" is used for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #' @param warnings Whether warnings related to distance ties when calculating bootstrap
-#'   clusters should be printed. Default is FALSE.
+#'   clusters should be printed. The default is FALSE.
 #' @param ... Additional arguments to pass to `calculate_clusters()` which calculates
 #'   bootstrapped clusters. Usually, these will be the same arguments used to generate
 #'   the original clusters.

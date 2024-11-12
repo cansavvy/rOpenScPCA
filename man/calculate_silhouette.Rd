@@ -25,7 +25,7 @@ SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 output from the `rOpenScPCA::calculate_clusters()` function.}
 
 \item{cluster_col}{The name of the column in `cluster_df` which contains cluster
-assignments. Default value is "cluster".}
+assignments. The default is "cluster".}
 
 \item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
 ids. The default is "cell_id".}

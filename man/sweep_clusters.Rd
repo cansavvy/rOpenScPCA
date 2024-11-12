@@ -29,16 +29,16 @@ Provide a vector of unique values to vary this parameter. Options include "jacca
   "rank", or "number"}
 
 \item{nn}{Number of nearest neighbors to consider when sweeping parameters.
-Provide a vector of unique values to vary this parameter. Default is 10.}
+Provide a vector of unique values to vary this parameter. The default is 10.}
 
 \item{resolution}{Resolution parameter used by louvain and leiden clustering only.
-Provide a vector of unique values to vary this parameter. Default is 1.}
+Provide a vector of unique values to vary this parameter. The default is 1.}
 
 \item{objective_function}{Leiden-specific parameter for whether to use the
 Constant Potts Model ("CPM"; default) or "modularity". Provide a vector of unique values
 to vary this parameter.}
 
-\item{threads}{Number of threads to use. Default is 1.}
+\item{threads}{Number of threads to use. The default is 1.}
 
 \item{seed}{Random seed to set for clustering.}
 
