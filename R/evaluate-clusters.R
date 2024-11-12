@@ -14,7 +14,7 @@
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
-#'   assignments. Default value is "cluster".
+#'   assignments. The default is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
 #'   ids. The default is "cell_id".
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
