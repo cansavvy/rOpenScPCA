@@ -16,9 +16,9 @@
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
 #'   assignments. Default value is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
-#'   ids "cell_id" is assumed by default.
+#'   ids. The default is "cell_id".
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
-#'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
+#'   matrix is provided. If the name is not provided, the name "PCA" is used for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #'
 #' @return Expanded `cluster_df` data frame with additional columns `silhouette_width`,
@@ -86,11 +86,11 @@ calculate_silhouette <- function(
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
-#'   assignments. "cluster" is assumed by default.
+#'   assignments. The default is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
-#'   ids "cell_id" is assumed by default.
+#'   ids. The default is "cell_id".
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
-#'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
+#'   matrix is provided. If the name is not provided, the name "PCA" is used for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #' @param ... Additional arguments to pass to `bluster::neighborPurity()`
 #'
@@ -169,13 +169,13 @@ calculate_purity <- function(
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
 #' @param cluster_col The name of the column in `cluster_df` which contains cluster
-#'   assignments. "cluster" is assumed by default.
+#'   assignments. The default is "cluster".
 #' @param cell_id_col The name of the column in `cluster_df` which contains unique cell
-#'   ids "cell_id" is assumed by default.
+#'   ids. The default is "cell_id".
 #' @param replicates Number of bootstrap replicates to perform. Default is 20.
 #' @param seed Random seed
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used if a
-#'   matrix is provided. If the name is not provided, the name "PCA" is assumed for
+#'   matrix is provided. If the name is not provided, the name "PCA" is used for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #' @param warnings Whether warnings related to distance ties when calculating bootstrap
 #'   clusters should be printed. Default is FALSE.

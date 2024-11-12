@@ -26,13 +26,13 @@ SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 output from the `rOpenScPCA::calculate_clusters()` function.}
 
 \item{cluster_col}{The name of the column in `cluster_df` which contains cluster
-assignments. "cluster" is assumed by default.}
+assignments. The default is "cluster".}
 
 \item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
-ids "cell_id" is assumed by default.}
+ids. The default is "cell_id".}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used if a
-matrix is provided. If the name is not provided, the name "PCA" is assumed for
+matrix is provided. If the name is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
 
 \item{...}{Additional arguments to pass to `bluster::neighborPurity()`}

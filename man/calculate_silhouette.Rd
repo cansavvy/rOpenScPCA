@@ -28,10 +28,10 @@ output from the `rOpenScPCA::calculate_clusters()` function.}
 assignments. Default value is "cluster".}
 
 \item{cell_id_col}{The name of the column in `cluster_df` which contains unique cell
-ids "cell_id" is assumed by default.}
+ids. The default is "cell_id".}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used if a
-matrix is provided. If the name is not provided, the name "PCA" is assumed for
+matrix is provided. If the name is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
 }
 \value{
