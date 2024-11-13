@@ -23,6 +23,9 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Remove renv so environment will not be overridden
+        run: rm -f renv.lock .Rprofile
+
       - name: Set up dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
