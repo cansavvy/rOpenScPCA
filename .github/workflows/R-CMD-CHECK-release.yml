@@ -5,11 +5,12 @@ on:
     branches:
       - main
       - feature/*
+  pull_request:
 
 name: R-CMD-CHECK-release
 
 jobs:
-  R-CMD-check-renv:
+  R-CMD-check-release:
     runs-on: ubuntu-22.04
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
