@@ -28,11 +28,13 @@ RoxygenNote: 7.3.2
 Imports:
     BiocParallel,
     bluster (>= 1.14),
+    DelayedMatrixStats,
     dplyr,
     methods,
     pdfCluster,
     purrr,
     SingleCellExperiment,
+    sparseMatrixStats,
     tibble,
     tidyr
 biocViews:
