@@ -31,7 +31,7 @@ Provide a vector of unique values to vary this parameter. Options include "jacca
 \item{nn}{Number of nearest neighbors to consider when sweeping parameters.
 Provide a vector of unique values to vary this parameter. The default is 10.}
 
-\item{resolution}{Resolution parameter used by louvain and leiden clustering only.
+\item{resolution}{Resolution parameter used by Louvain and Leiden clustering only.
 Provide a vector of unique values to vary this parameter. The default is 1.}
 
 \item{objective_function}{Leiden-specific parameter for whether to use the
@@ -50,8 +50,8 @@ object name will default to "PCA" and the Seurat object name will default to "pc
 A list of data frames from performing clustering across all parameter combinations.
   Columns include `cluster_set` (identifier column for results from a single clustering run),
   `cell_id`, and `cluster`. Additional columns represent algorithm parameters and include at least:
-  `algorithm`, `weighting`, and `nn`. Louvain and leiden clustering will also include `resolution`,
-  and leiden clustering will further include `objective_function`.
+  `algorithm`, `weighting`, and `nn`. Louvain and Leiden clustering will also include `resolution`,
+  and Leiden clustering will further include `objective_function`.
 }
 \description{
 This function can be used to perform reproducible clustering while varying a set of parameters.
@@ -66,13 +66,13 @@ Multiple values can be provided for any of:
 For each algorithm specified, all parameters possible to use with that
 algorithm will be systematically varied. This function does not accept additional
 parameters besides those listed above.
-Note that defaults for some arguments may differ from the bluster::NNGraphParam() defaults.
+Note that defaults for some arguments may differ from the `bluster::NNGraphParam()` defaults.
 Specifically, the clustering algorithm defaults to "louvain" and the weighting scheme to "jaccard"
 to align with common practice in scRNA-seq analysis.
 }
 \examples{
 \dontrun{
-# perform louvain clustering with jaccard weighting (defaults),
+# perform Louvain clustering with Jaccard weighting (defaults),
 # varying the nearest neighobor parameter, and set a seed for reproducibility
 cluster_df <- sweep_clusters(
   sce_object,
@@ -80,7 +80,7 @@ cluster_df <- sweep_clusters(
   seed = 11
 )
 
-# perform louvain clustering, with jaccard and rank weighting, and
+# perform Louvain clustering, with Jaccard and rank weighting, and
 # varying the nearest neighbor and resolution parameters.
 cluster_df <- sweep_clusters(
   sce_object,
@@ -91,8 +91,8 @@ cluster_df <- sweep_clusters(
   seed = 11
 )
 
-# perform walktrap and louvain clustering with jaccard weighting, and
-# varying the nearest neighbors for both algorithms, and resolution for louvain.
+# perform walktrap and Louvain clustering with Jaccard weighting, and
+# varying the nearest neighbors for both algorithms, and resolution for Louvain.
 cluster_df <- sweep_clusters(
   sce_object,
   algorithm = c("walktrap", "louvain"),

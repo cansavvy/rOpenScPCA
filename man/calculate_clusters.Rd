@@ -28,7 +28,7 @@ If a matrix is provided, it must have row names of cell ids (e.g., barcodes).}
 
 \item{nn}{Number of nearest neighbors. The default is 10.}
 
-\item{resolution}{Resolution parameter used by louvain and leiden clustering only. Default is 1.}
+\item{resolution}{Resolution parameter used by Louvain and Leiden clustering only. Default is 1.}
 
 \item{objective_function}{Leiden-specific parameter for whether to use the Constant Potts Model ("CPM"; default)
 or "modularity"}
@@ -75,7 +75,7 @@ cluster_df <- calculate_clusters(seurat_object, seed = 11)
 # cluster directly from a matrix using default parameters
 cluster_df <- calculate_clusters(pca_matrix, seed = 11)
 
-# cluster directly from a matrix using the leiden algorithm with a resolution of 0.1
+# cluster directly from a matrix using the Leiden algorithm with a resolution of 0.1
 cluster_df <- calculate_clusters(
   pca_matrix,
   algorithm = "leiden",
@@ -83,7 +83,7 @@ cluster_df <- calculate_clusters(
   seed = 11
 )
 
-# cluster directly from a matrix using the leiden algorithm with 3 iterations
+# cluster directly from a matrix using the Leiden algorithm with 3 iterations
 cluster_df <- calculate_clusters(
   pca_matrix,
   algorithm = "leiden",

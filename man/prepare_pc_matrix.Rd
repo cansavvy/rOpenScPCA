@@ -12,7 +12,7 @@ or Seurat object containing PCs. If a matrix is provided, rows should be cells
 and columns should be PCs, and row names should be cell ids (e.g., barcodes).}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. Not used for
-matrices. If this is not provided, the name "PCA" is assumed for
+matrices. If this is not provided, the name "PCA" is used for
 SingleCellExperiment objects, and "pca" for Seurat objects.}
 }
 \value{
