@@ -95,7 +95,6 @@ test_that("calculate_purity works as expected with non-default cell id column na
 
 
 test_that("calculate_stability works as expected with defaults", {
-
   df <- calculate_stability(test_mat, cluster_df)
 
   expected_names <- colnames(cluster_df)[!(colnames(cluster_df) %in% c("cell_id", "cluster"))]
@@ -143,14 +142,12 @@ test_that("calculate_stability warnings argument works", {
   expect_warning({
     df <- calculate_stability(test_mat, cluster_df, replicates = 1, seed = 1, warnings = TRUE)
   })
-
 })
 
 
 
 
 test_that("calculate_stability works as expected with non-default cluster column name", {
-
   cluster_df <- cluster_df |>
     dplyr::rename(clusters = cluster)
 
@@ -165,7 +162,6 @@ test_that("calculate_stability works as expected with non-default cluster column
 
 
 test_that("calculate_stability works as expected with non-default cell id name", {
-
   cluster_df <- cluster_df |>
     dplyr::rename(barcodes = cell_id)
 
@@ -182,10 +178,9 @@ test_that("calculate_stability works as expected with non-default cell id name",
 
 
 test_that("calculate_stability errors as expected", {
-
   # cluster_df too short
   expect_error({
-    calculate_stability(test_mat, cluster_df[1:5,])
+    calculate_stability(test_mat, cluster_df[1:5, ])
   })
 
   # cluster_df too long

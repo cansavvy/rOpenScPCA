@@ -1,34 +1,37 @@
 #' Calculate graph-based clusters from a provided matrix
 #'
 #' This function is provided to simplify application of bluster package clustering functions on OpenScPCA data.
-#' In particular, this function runs bluster::clusterRows() with the bluster::NNGraphParam() function on a
+#' In particular, this function runs `bluster::clusterRows()` with the `bluster::NNGraphParam()` function on a
 #' principal components matrix, provided either directly or via single-cell object.
-#' Note that defaults for some arguments may differ from the bluster::NNGraphParam() defaults.
+#' Note that defaults for some arguments may differ from the `bluster::NNGraphParam()` defaults.
 #' Specifically, the clustering algorithm defaults to "louvain" and the weighting scheme to "jaccard"
 #' to align with common practice in scRNA-seq analysis.
 #'
 #' @import methods
 #'
 #' @param x An object containing PCs that clustering can be performed in. This can be either a SingleCellExperiment
-#'   object, a Seurat object, or a matrix where columns are PCs and rows are cells. If a matrix is provided, it must
-#'   have row names of cell ids (e.g., barcodes).
+#'   object, a Seurat object, or a matrix where columns are PCs and rows are cells.
+#'   If a matrix is provided, it must have row names of cell ids (e.g., barcodes).
 #' @param algorithm Clustering algorithm to use. Must be one of "louvain" (default), "walktrap", or "leiden".
 #' @param weighting Weighting scheme to use. Must be one of "jaccard" (default), "rank", or "number"
 #' @param nn Number of nearest neighbors. The default is 10.
-#' @param resolution Resolution parameter used by louvain and leiden clustering only. Default is 1.
-#' @param objective_function Leiden-specific parameter for whether to use the Constant Potts Model ("CPM"; default) or "modularity"
+#' @param resolution Resolution parameter used by Louvain and Leiden clustering only. Default is 1.
+#' @param objective_function Leiden-specific parameter for whether to use the Constant Potts Model ("CPM"; default)
+#'   or "modularity"
 #' @param cluster_args List of additional arguments to pass to the chosen clustering function.
 #'   Only single values for each argument are supported (no vectors or lists).
-#'   See igraph documentation for details on each clustering function: https://igraph.org/r/html/latest
+#'   See `igraph` documentation for details on each clustering function: <https://igraph.org/r/html/latest>
 #' @param threads Number of threads to use. The default is 1.
 #' @param seed Random seed to set for clustering.
-#' @param pc_name Name of principal components slot in provided object. This argument is only used if a SingleCellExperiment
-#'   or Seurat object is provided. If not provided, the SingleCellExperiment object name will default to "PCA" and the
+#' @param pc_name Name of principal components slot in provided object.
+#'   This argument is only used if a SingleCellExperiment or Seurat object is provided.
+#'   If not provided, the SingleCellExperiment object name will default to "PCA" and the
 #'   Seurat object name will default to "pca".
 #'
-#' @return A data frame of cluster results with columns `cell_id` and `cluster`. Additional columns represent algorithm parameters
-#'   and include at least: `algorithm`, `weighting`, and `nn`. Louvain and leiden clustering will also include `resolution`, and
-#'   leiden clustering will further include `objective_function`.
+#' @return A data frame of cluster results with columns `cell_id` and `cluster`.
+#'   Additional columns represent algorithm parameters and include at least: `algorithm`, `weighting`, and `nn`.
+#'   Louvain and Leiden clustering will also include `resolution`,
+#'   and Leiden clustering will further include `objective_function`.
 #'
 #' @export
 #'
@@ -47,7 +50,7 @@
 #' # cluster directly from a matrix using default parameters
 #' cluster_df <- calculate_clusters(pca_matrix, seed = 11)
 #'
-#' # cluster directly from a matrix using the leiden algorithm with a resolution of 0.1
+#' # cluster directly from a matrix using the Leiden algorithm with a resolution of 0.1
 #' cluster_df <- calculate_clusters(
 #'   pca_matrix,
 #'   algorithm = "leiden",
@@ -55,7 +58,7 @@
 #'   seed = 11
 #' )
 #'
-#' # cluster directly from a matrix using the leiden algorithm with 3 iterations
+#' # cluster directly from a matrix using the Leiden algorithm with 3 iterations
 #' cluster_df <- calculate_clusters(
 #'   pca_matrix,
 #'   algorithm = "leiden",
@@ -68,8 +71,8 @@ calculate_clusters <- function(
     algorithm = c("louvain", "walktrap", "leiden"),
     weighting = c("jaccard", "rank", "number"),
     nn = 10,
-    resolution = 1, # louvain or leiden
-    objective_function = c("CPM", "modularity"), # leiden only
+    resolution = 1, # Louvain or Leiden
+    objective_function = c("CPM", "modularity"), # Leiden only
     cluster_args = list(),
     threads = 1,
     seed = NULL,
@@ -154,7 +157,7 @@ calculate_clusters <- function(
 #'
 #' This function first determines if the provided object is a SingleCellExperiment or
 #' Seurat object, and then extract the PC matrix. If no name for the PC matrix is provided,
-#' this function will assume the name of "PCA" for SingleCellExperiment objects, and
+#' this function will use "PCA" for SingleCellExperiment objects, and
 #' "pca" for Seurat objects.
 #'
 #' @import SingleCellExperiment
@@ -162,7 +165,7 @@ calculate_clusters <- function(
 #'
 #' @param sc_object Either a SingleCellExperiment or Seurat object
 #' @param pc_name Optionally, the name of the PC matrix in the object. If this is
-#' not provided, the name "PCA" is assumed for SingleCellExperiment objects, and
+#' not provided, the name "PCA" is used for SingleCellExperiment objects, and
 #' "pca" for Seurat objects.
 #'
 #' @return PC matrix with row names
@@ -171,13 +174,13 @@ calculate_clusters <- function(
 #'
 #' @examples
 #' \dontrun{
-#' # extract PC matrix from SCE object, assuming default name "PCA"
+#' # extract PC matrix from SCE object, using default name "PCA"
 #' pca_matrix <- extract_pc_matrix(sce_object)
 #'
 #' # extract PC matrix from SCE object with non-default name "PCA_MAT"
 #' pca_matrix <- extract_pc_matrix(sce_object, pc_name = "PCA_MAT")
 #'
-#' # extract PC matrix from Seurat object, assuming default name "pca"
+#' # extract PC matrix from Seurat object, using default name "pca"
 #' pca_matrix <- extract_pc_matrix(seurat_object)
 #' }
 extract_pc_matrix <- function(sc_object, pc_name = NULL) {
@@ -230,7 +233,7 @@ extract_pc_matrix <- function(sc_object, pc_name = NULL) {
 #'  or Seurat object containing PCs. If a matrix is provided, rows should be cells
 #'  and columns should be PCs, and row names should be cell ids (e.g., barcodes).
 #' @param pc_name Optionally, the name of the PC matrix in the object. Not used for
-#'   matrices. If this is not provided, the name "PCA" is assumed for
+#'   matrices. If this is not provided, the name "PCA" is used for
 #'   SingleCellExperiment objects, and "pca" for Seurat objects.
 #'
 #' @return A matrix of PCs with row names representing cell ids
@@ -242,7 +245,10 @@ prepare_pc_matrix <- function(x, pc_name = NULL) {
   } else if (is(x, "SingleCellExperiment") || is(x, "Seurat")) {
     x <- extract_pc_matrix(x, pc_name = pc_name)
   } else {
-    stop("The first argument should be one of: a SingleCellExperiment object, a Seurat object, or a matrix with row names.")
+    stop(
+      "The first argument should be one of: ",
+      "a SingleCellExperiment object, a Seurat object, or a matrix with row names."
+    )
   }
 
   return(x)

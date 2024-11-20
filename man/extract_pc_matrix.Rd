@@ -11,7 +11,7 @@ extract_pc_matrix(sc_object, pc_name = NULL)
 \item{sc_object}{Either a SingleCellExperiment or Seurat object}
 
 \item{pc_name}{Optionally, the name of the PC matrix in the object. If this is
-not provided, the name "PCA" is assumed for SingleCellExperiment objects, and
+not provided, the name "PCA" is used for SingleCellExperiment objects, and
 "pca" for Seurat objects.}
 }
 \value{
@@ -20,18 +20,18 @@ PC matrix with row names
 \description{
 This function first determines if the provided object is a SingleCellExperiment or
 Seurat object, and then extract the PC matrix. If no name for the PC matrix is provided,
-this function will assume the name of "PCA" for SingleCellExperiment objects, and
+this function will use "PCA" for SingleCellExperiment objects, and
 "pca" for Seurat objects.
 }
 \examples{
 \dontrun{
-# extract PC matrix from SCE object, assuming default name "PCA"
+# extract PC matrix from SCE object, using default name "PCA"
 pca_matrix <- extract_pc_matrix(sce_object)
 
 # extract PC matrix from SCE object with non-default name "PCA_MAT"
 pca_matrix <- extract_pc_matrix(sce_object, pc_name = "PCA_MAT")
 
-# extract PC matrix from Seurat object, assuming default name "pca"
+# extract PC matrix from Seurat object, using default name "pca"
 pca_matrix <- extract_pc_matrix(seurat_object)
 }
 }

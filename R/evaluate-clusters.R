@@ -279,7 +279,9 @@ calculate_stability <- function(
 
         resampled_df <- withCallingHandlers(
           calculate_clusters(resampled_pca, ...),
-          warning = \(w) {if(!warnings) tryInvokeRestart("muffleWarning")}
+          warning = \(w) {
+            if (!warnings) tryInvokeRestart("muffleWarning")
+          }
         )
 
         ari <- pdfCluster::adj.rand.index(resampled_df$cluster, original_clusters)
