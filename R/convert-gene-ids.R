@@ -48,7 +48,7 @@ ensembl_to_symbol <- function(ensembl_ids, sce, leave_na = FALSE) {
 
   missing_symbols <- is.na(gene_symbols)
   if (!leave_na && any(missing_symbols)) {
-    warning("Not all `ensembl_ids` are present in the `sce` object's `gene_ids`, using input ids for missing values.")
+    warning("Not all `ensembl_ids` values have corresponding gene symbols, using input ids for missing values.")
     gene_symbols[missing_symbols] <- ensembl_ids[missing_symbols]
   }
 
