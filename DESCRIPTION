@@ -32,6 +32,7 @@ Imports:
     methods,
     pdfCluster,
     purrr,
+    S4Vectors,
     SingleCellExperiment,
     tibble,
     tidyr
