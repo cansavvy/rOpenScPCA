@@ -48,7 +48,7 @@ ensembl_to_symbol <- function(ensembl_ids, sce, leave_na = FALSE) {
 
   missing_symbols <- is.na(gene_symbols)
   if (!leave_na && any(missing_symbols)) {
-    warning("Not all `ensembl_ids` are present in sce `gene_ids`, using input ids for missing values.")
+    warning("Not all `ensembl_ids` are present in the `sce` object's `gene_ids`, using input ids for missing values.")
     gene_symbols[missing_symbols] <- ensembl_ids[missing_symbols]
   }
 
@@ -97,7 +97,7 @@ sce_to_symbols <- function(sce, convert_hvg = TRUE, convert_pca = TRUE) {
 
   missing_ids <- is.na(row_ids)
   if (any(missing_ids)) {
-    warning("Not all rows have gene symbols, using ensembl ids for missing values.")
+    warning("Not all rows have gene symbols, using Ensembl ids for missing values.")
     row_ids[missing_ids] <- names(row_ids)[missing_ids]
   }
 
