@@ -67,9 +67,9 @@ results, and a value of 1 indicates perfect agreement.
 When assessing stability, you should specify the same clustering parameters here as
 were used to calculate the original clusters.
 
-Note that this function will also make use of bluster::clusterRows() with the
-bluster::NNGraphParam() function on a principal components matrix. Note that defaults
-for some arguments may differ from the bluster::NNGraphParam() defaults.
+Note that this function will also make use of `bluster::clusterRows()` with the
+`bluster::NNGraphParam()` function on a principal components matrix. Note that defaults
+for some arguments may differ from the `bluster::NNGraphParam()` defaults.
 Specifically, the clustering algorithm defaults to "louvain" and the weighting scheme
 to "jaccard" to align with common practice in scRNA-seq analysis.
 }
