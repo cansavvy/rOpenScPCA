@@ -78,7 +78,7 @@ ensembl_to_symbol <- function(ensembl_ids, sce, leave_na = FALSE) {
 #' @export
 #'
 #' @import SingleCellExperiment
-#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors metadata `metadata<-`
 #'
 #' @examples
 #' \dontrun{
