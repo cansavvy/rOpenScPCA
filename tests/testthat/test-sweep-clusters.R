@@ -1,5 +1,3 @@
-suppressPackageStartupMessages(library(SingleCellExperiment))
-
 set.seed(2024)
 sce <- splatter::simpleSimulate(nGenes = 1000, verbose = FALSE) |>
   scater::logNormCounts() |>

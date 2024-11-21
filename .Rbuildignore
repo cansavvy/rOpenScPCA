@@ -3,3 +3,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^\.lintr$
+^\.pre-commit-config.yaml$

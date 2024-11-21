@@ -7,8 +7,6 @@
 #' Specifically, the clustering algorithm defaults to "louvain" and the weighting scheme to "jaccard"
 #' to align with common practice in scRNA-seq analysis.
 #'
-#' @import methods
-#'
 #' @param x An object containing PCs that clustering can be performed in. This can be either a SingleCellExperiment
 #'   object, a Seurat object, or a matrix where columns are PCs and rows are cells.
 #'   If a matrix is provided, it must have row names of cell ids (e.g., barcodes).
@@ -32,6 +30,8 @@
 #'   Additional columns represent algorithm parameters and include at least: `algorithm`, `weighting`, and `nn`.
 #'   Louvain and Leiden clustering will also include `resolution`,
 #'   and Leiden clustering will further include `objective_function`.
+#'
+#' @import methods
 #'
 #' @export
 #'
@@ -160,15 +160,15 @@ calculate_clusters <- function(
 #' this function will use "PCA" for SingleCellExperiment objects, and
 #' "pca" for Seurat objects.
 #'
-#' @import SingleCellExperiment
-#' @import methods
-#'
 #' @param sc_object Either a SingleCellExperiment or Seurat object
 #' @param pc_name Optionally, the name of the PC matrix in the object. If this is
 #' not provided, the name "PCA" is used for SingleCellExperiment objects, and
 #' "pca" for Seurat objects.
 #'
 #' @return PC matrix with row names
+#'
+#' @import methods
+#' @import SingleCellExperiment
 #'
 #' @export
 #'
