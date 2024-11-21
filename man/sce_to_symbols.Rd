@@ -20,7 +20,8 @@ A SingleCellExperiment object with row names set as gene symbols.
 The SingleCellExperiment objects produced as part of ScPCA are indexed by
 Ensembl gene ids, as those are more stable than gene symbols. However,
 for many applications gene symbols are useful. This function converts the
-row names (indexes) of a SingleCellExperiment object to gene symbols based.
+row names (indexes) of a SingleCellExperiment object to gene symbols based on the
+`gene_symbol` column that is present in the row data of ScPCA SingleCellExperiment objects.
 }
 \details{
 Internal data structures such as the list of highly variable genes and the
