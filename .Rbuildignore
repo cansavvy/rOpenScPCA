@@ -5,3 +5,4 @@
 ^\.github$
 ^\.lintr$
 ^\.pre-commit-config.yaml$
+^setup$
