@@ -2536,13 +2536,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.7",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "utils"
-      ],
-      "Hash": "397b7b2a265bc5a7a06852524dabae20"
+      "Version": "1.0.11",
+      "OS_type": null,
+      "Repository": "CRAN",
+      "Source": "Repository"
     },
     "reshape2": {
       "Package": "reshape2",
