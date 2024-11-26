@@ -40,4 +40,4 @@ repos:
       - id: no-browser-statement
       - id: no-debug-statement
       - id: deps-in-desc
-        exclude: 'docker/.*|renv/.*|setup/.*'
+        exclude: 'docker/.*|renv/.*|data-raw/.*'
