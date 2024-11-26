@@ -22,10 +22,10 @@ genes_scpca <- readRDS(here::here("tests", "testthat", "data", "scpca_sce.rds"))
   as.data.frame() |>
   # Use Ensembl ID if gene symbol is missing, then make unique
   mutate(
-    gene_symbol = ifelse(is.na(gene_symbol), gene_ids, gene_symbol),
-    gene_symbol_unique = make.unique(gene_symbol)
+    gene_symbol_scpca = ifelse(is.na(gene_symbol), gene_ids, gene_symbol),
+    gene_symbol_scpca_unique = make.unique(gene_symbol_scpca)
   ) |>
-  select(gene_ids, gene_symbol, gene_symbol_unique)
+  select(gene_ids, gene_symbol_scpca, gene_symbol_scpca_unique)
 ```
 
 
@@ -95,7 +95,7 @@ Let's look at the number of missing gene symbols in the ScPCA data:
 
 ```{r}
 scpca_missing <- scpca_gene_reference |>
-  filter(is.na(gene_symbol))
+  filter(is.na(gene_symbol_scpca))
 ```
 
 How many of the gene symbols in the 10x 2020 reference are in the ScPCA data, but perhaps with a different Ensembl ID?
@@ -108,15 +108,72 @@ sum(symbols_10x2020 %in% genes_scpca$gene_symbol)
 What are they?
 
 ```{r}
+# Match the genes that are in the 10x 2020 reference to the ScPCA table on gene symbol
+# Only for those where the gene id is missing in the ScPCA table
 genes_10x2020 |>
   filter(
     gene_symbol_10x2020 %in% genes_scpca$gene_symbol,
     !gene_ids %in% genes_scpca$gene_ids
   ) |>
-  left_join(genes_scpca, by = c("gene_symbol_10x2020" = "gene_symbol"))
+  left_join(genes_scpca, by = c("gene_symbol_10x2020" = "gene_symbol_scpca"))
 ```
 
 Looks like these are all cases where the gene symbol has been updated.
-In only one case is this a gene where something was not unique, which is `LINC1505`.
+In only one case is this a gene where something was not unique, which is `LINC01505`.
+This gene seems to have simply been removed in later revisions, so I think we can safely not worry about it.
 
-If we can update the Ensembl ids that would be good
+```{r}
+scpca_gene_reference |>
+  filter(gene_symbol_10x2020 == "LINC01505")
+```
+
+In general, simply translating to the list gene symbols should work as expected.
+
+### BAC removal
+
+In Ensembl version 104, the version we are using for ScPCA, BAC-based gene IDs were removed and replaced with simply the Ensembl gene ID.
+Many of the gene symbols that are present in the 10x references but missing in the ScPCA data are these BAC-based gene IDs.
+We will probably want to translate these to the 10x symbol when requested.
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    !is.na(gene_symbol_10x2020),
+    !gene_symbol_10x2020 %in% genes_scpca$gene_symbol_scpca
+  )
+```
+
+### Disagreements between symbols
+
+One other question is how often the `unique` gene symbols disagree for the same Ensemble ID.
+Here we will exclude the cases where the gene symbol is an Ensembl ID in the ScPCA data, as these are expected to be different.
+
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    gene_symbol_scpca != gene_ids,
+    gene_symbol_scpca_unique != gene_symbol_10x2020_unique
+  )
+```
+
+More than I expected, but it looks like most of these are cases where the gene symbol has been updated.
+What we are really interested in is the cases where the process of making the gene symbol unique had different effects:
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    gene_symbol_scpca == gene_symbol_10x2020,
+    gene_symbol_scpca_unique != gene_symbol_10x2020_unique
+  )
+```
+
+This definitely happens more than I would have hoped. Which is to say that the best way to handle this is probably simply to translate using the the table directly when performing comparisons to existing data for the most accurate results.
+
+We will need to have clear instructions about when to use which kind of translation.
+
+## Add the table to package data
+
+```{r}
+usethis::use_data(scpca_gene_reference, internal = TRUE, version = 3, overwrite = TRUE)
+```
