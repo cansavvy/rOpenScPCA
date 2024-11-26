@@ -2,19 +2,31 @@
 % Please edit documentation in R/convert-gene-ids.R
 \name{ensembl_to_symbol}
 \alias{ensembl_to_symbol}
-\title{Convert Ensembl gene ids to gene symbols based on an ScPCA SingleCellExperiment object}
+\title{Convert Ensembl gene ids to gene symbols based on reference gene lists}
 \usage{
-ensembl_to_symbol(ensembl_ids, sce, leave_na = FALSE)
+ensembl_to_symbol(
+  ensembl_ids,
+  reference = c("scpca", "10x2020", "10x2024"),
+  sce = NULL,
+  unique = FALSE,
+  leave_na = FALSE
+)
 }
 \arguments{
 \item{ensembl_ids}{A character vector of Ensembl gene ids to translate to
 gene symbols.}
 
-\item{sce}{A SingleCellExperiment object containing gene ids and gene symbols
-to use for translation.}
+\item{reference}{The reference gene list to use for translation. One of `scpca`,
+`10x2020`, `10x2024`. The `scpca` reference is the default.}
 
-\item{leave_na}{logical indicating whether to leave NA values in the output.
-Default is `FALSE`}
+\item{sce}{A SingleCellExperiment object to use as a reference for gene symbols.
+If provided, the `reference` argument will be ignored. The `sce` object must
+include columns with the names `gene_ids` and `gene_symbol` to use for conversion.}
+
+\item{unique}{Whether to use unique gene symbols, as would be done if
+data had been read in with gene symbols by Seurat. Default is FALSE.}
+
+\item{leave_na}{Whether to leave NA values in the output vector. Default is FALSE.}
 }
 \value{
 A vector of gene symbols corresponding to the input Ensembl ids.
@@ -22,24 +34,18 @@ A vector of gene symbols corresponding to the input Ensembl ids.
 \description{
 The SingleCellExperiment objects produced as part of ScPCA are indexed by
 Ensembl gene ids, as those are more stable than gene symbols. However,
-for many applications gene symbols are useful. This function provides a
-simple and consistent conversion of Ensembl gene ids to gene symbols based on
-the `gene_symbol` column that is present in the row data of ScPCA
-SingleCellExperiment objects.
+for many applications gene symbols are useful. This function provides
+simple conversion of Ensembl gene ids to gene symbols based on either the
+ScPCA reference gene list or a 10x reference gene list as used by Cell Ranger.
 }
 \details{
-For this function, the SingleCellExperiment object must contain a `gene_ids`
-column containing Ensembl gene ids and a `gene_symbol` column containing gene
-symbols. If any gene ids are not found or if the gene symbol is not defined,
-the input gene id is returned, unless the `leave_na` is set to `TRUE`.
+The gene symbols can either be made unique (as would be done if read in by Seurat)
+or left as is.
 }
 \examples{
-\dontrun{
 # convert a set of Ensembl ids to gene symbols
-# using a SingleCellExperiment reference
 ensembl_ids <- c("ENSG00000141510", "ENSG00000134323")
-gene_symbols <- ensembl_to_symbol(ensembl_ids, sce)
+gene_symbols <- ensembl_to_symbol(ensembl_ids)
 gene_symbols
-### [1] "TP53" "MYCN"
-}
+
 }
