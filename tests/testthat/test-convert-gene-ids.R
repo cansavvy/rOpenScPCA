@@ -70,3 +70,25 @@ test_that("conversion of a full sce object works as expected", {
   expected_rotation_ids <- gene_symbols[rownames(attr(reducedDim(sce, "PCA"), "rotation"))]
   expect_equal(rotation_ids, expected_rotation_ids)
 })
+
+
+test_that("conversion of an sce object using a reference works as expected", {
+  sce <- readRDS(test_path("data", "scpca_sce.rds"))
+
+  # testing with the ScPCA reference, which should be the same as internal table
+  converted_sce <- sce_to_symbols(sce, reference = "scpca")
+
+  gene_symbols <- rowData(sce)$gene_symbol
+  names(gene_symbols) <- rowData(sce)$gene_ids
+  gene_symbols[is.na(gene_symbols)] <- names(gene_symbols)[is.na(gene_symbols)]
+
+  expect_equal(rownames(converted_sce), unname(gene_symbols))
+
+  # check that hvg and PCA were converted too.
+  expected_hvg <- gene_symbols[metadata(sce)$highly_variable_genes]
+  expect_equal(metadata(converted_sce)$highly_variable_genes, expected_hvg)
+
+  rotation_ids <- rownames(attr(reducedDim(converted_sce, "PCA"), "rotation"))
+  expected_rotation_ids <- gene_symbols[rownames(attr(reducedDim(sce, "PCA"), "rotation"))]
+  expect_equal(rotation_ids, expected_rotation_ids)
+})

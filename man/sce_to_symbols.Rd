@@ -4,10 +4,22 @@
 \alias{sce_to_symbols}
 \title{Set the row names of an ScPCA SingleCellExperiment object to gene symbols}
 \usage{
-sce_to_symbols(sce, convert_hvg = TRUE, convert_pca = TRUE)
+sce_to_symbols(
+  sce,
+  reference = c("sce", "scpca", "10x2020", "10x2024"),
+  unique = FALSE,
+  convert_hvg = TRUE,
+  convert_pca = TRUE
+)
 }
 \arguments{
 \item{sce}{A SingleCellExperiment object containing gene ids and gene symbols.}
+
+\item{reference}{The reference gene list for conversion. One of `sce`, `scpca`,
+`10x2020`, or `10x2024`. If `sce` (the default) the internal row data is used.}
+
+\item{unique}{Whether to use unique gene symbols, as would be done if
+data had been read in with gene symbols by Seurat. Default is FALSE.}
 
 \item{convert_hvg}{Logical indicating whether to convert highly variable genes to gene symbols.}
 
@@ -22,6 +34,9 @@ Ensembl gene ids, as those are more stable than gene symbols. However,
 for many applications gene symbols are useful. This function converts the
 row names (indexes) of a SingleCellExperiment object to gene symbols based on the
 `gene_symbol` column that is present in the row data of ScPCA SingleCellExperiment objects.
+It is also possible to use an alternative reference, such as the reference gene sets
+provided by 10x Genomics and used for Cell Ranger. Values for the 10x-provided 2020 and
+2024 references are available.
 }
 \details{
 Internal data structures such as the list of highly variable genes and the

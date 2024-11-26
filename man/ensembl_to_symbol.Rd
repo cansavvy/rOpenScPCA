@@ -26,7 +26,9 @@ include columns with the names `gene_ids` and `gene_symbol` to use for conversio
 \item{unique}{Whether to use unique gene symbols, as would be done if
 data had been read in with gene symbols by Seurat. Default is FALSE.}
 
-\item{leave_na}{Whether to leave NA values in the output vector. Default is FALSE.}
+\item{leave_na}{Whether to leave NA values in the output vector.
+If FALSE, any missing values will be replaced with the input ensembl_id value.
+Default is FALSE.}
 }
 \value{
 A vector of gene symbols corresponding to the input Ensembl ids.
@@ -47,5 +49,6 @@ or left as is.
 ensembl_ids <- c("ENSG00000141510", "ENSG00000134323")
 gene_symbols <- ensembl_to_symbol(ensembl_ids)
 gene_symbols
+### [1] "TP53" "MYCN"
 
 }

@@ -19,7 +19,9 @@
 #'  include columns with the names `gene_ids` and `gene_symbol` to use for conversion.
 #' @param unique Whether to use unique gene symbols, as would be done if
 #'  data had been read in with gene symbols by Seurat. Default is FALSE.
-#' @param leave_na Whether to leave NA values in the output vector. Default is FALSE.
+#' @param leave_na Whether to leave NA values in the output vector.
+#' If FALSE, any missing values will be replaced with the input ensembl_id value.
+#' Default is FALSE.
 #'
 #' @return A vector of gene symbols corresponding to the input Ensembl ids.
 #' @export
@@ -57,14 +59,14 @@ ensembl_to_symbol <- function(
   } else {
     all_symbols <- rowData(sce)$gene_symbol
     if (unique) {
-      all_symbols <- make.unique(all_symbols)
+      all_symbols[!is.na(all_symbols)] <- make.unique(all_symbols[!is.na(all_symbols)])
     }
     gene_symbols <- all_symbols[match(ensembl_ids, rowData(sce)$gene_ids)]
   }
 
   missing_symbols <- is.na(gene_symbols)
   if (!leave_na && any(missing_symbols)) {
-    warning("Not all `ensembl_ids` values have corresponding gene symbols, using input ids for missing values.")
+    warning("Not all input ids have corresponding gene symbols, using input ids for missing values.")
     gene_symbols[missing_symbols] <- ensembl_ids[missing_symbols]
   }
 
@@ -78,6 +80,9 @@ ensembl_to_symbol <- function(
 #' for many applications gene symbols are useful. This function converts the
 #' row names (indexes) of a SingleCellExperiment object to gene symbols based on the
 #' `gene_symbol` column that is present in the row data of ScPCA SingleCellExperiment objects.
+#' It is also possible to use an alternative reference, such as the reference gene sets
+#' provided by 10x Genomics and used for Cell Ranger. Values for the 10x-provided 2020 and
+#' 2024 references are available.
 #'
 #' Internal data structures such as the list of highly variable genes and the
 #' rotation matrix for the PCA are also updated to use gene symbols, if present
@@ -87,6 +92,10 @@ ensembl_to_symbol <- function(
 #' de-duplication is currently performed.
 #'
 #' @param sce A SingleCellExperiment object containing gene ids and gene symbols.
+#' @param reference The reference gene list for conversion. One of `sce`, `scpca`,
+#' `10x2020`, or `10x2024`. If `sce` (the default) the internal row data is used.
+#' @param unique Whether to use unique gene symbols, as would be done if
+#' data had been read in with gene symbols by Seurat. Default is FALSE.
 #' @param convert_hvg Logical indicating whether to convert highly variable genes to gene symbols.
 #' @param convert_pca Logical indicating whether to convert PCA rotation matrix to gene symbols.
 #'
@@ -101,21 +110,37 @@ ensembl_to_symbol <- function(
 #' # convert a SingleCellExperiment object to use gene symbols
 #' symbol_sce <- sce_to_symbols(sce)
 #' }
-sce_to_symbols <- function(sce, convert_hvg = TRUE, convert_pca = TRUE) {
+sce_to_symbols <- function(
+    sce,
+    reference = c("sce", "scpca", "10x2020", "10x2024"),
+    unique = FALSE,
+    convert_hvg = TRUE,
+    convert_pca = TRUE) {
+  reference <- match.arg(reference)
   stopifnot(
     "`sce` must be a SingleCellExperiment object." = is(sce, "SingleCellExperiment"),
-    "`sce` must contain both a `gene_ids` and `gene_symbol` column in the row data." =
-      all(c("gene_ids", "gene_symbol") %in% names(rowData(sce)))
+    "`sce` must contain both `gene_ids` and `gene_symbol` columns in the row data if it is being used as a reference." =
+      reference != "sce" || all(c("gene_ids", "gene_symbol") %in% names(rowData(sce)))
   )
-  row_ids <- rowData(sce)$gene_symbol
-  # set Ensembl ids as original ids for later translations
-  names(row_ids) <- rowData(sce)$gene_ids
 
-  missing_ids <- is.na(row_ids)
-  if (any(missing_ids)) {
-    warning("Not all rows have gene symbols, using Ensembl ids for missing values.")
-    row_ids[missing_ids] <- names(row_ids)[missing_ids]
+  # get ensembl ids, either from gene_ids column if present or from the row names as a fallback
+  if ("gene_ids" %in% names(rowData(sce))) {
+    ensembl_ids <- rowData(sce)$gene_ids
+  } else {
+    ensembl_ids <- rownames(sce)
   }
+  if (!all(startsWith(ensembl_ids, "ENSG"))) {
+    stop("gene_ids and/or row names are not all Ensembl ids, cannot convert to gene symbols.")
+  }
+
+  if (reference == "sce") {
+    gene_symbols <- ensembl_to_symbol(ensembl_ids, sce = sce, unique = unique)
+  } else {
+    gene_symbols <- ensembl_to_symbol(ensembl_ids, reference = reference, unique = unique)
+  }
+  row_ids <- gene_symbols
+  # set Ensembl ids as original ids for later translations
+  names(row_ids) <- ensembl_ids
 
   rownames(sce) <- row_ids
 
