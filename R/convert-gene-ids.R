@@ -55,7 +55,8 @@ ensembl_to_symbol <- function(
     # build the symbol column name
     symbol_column <- paste0("gene_symbol_", reference, ifelse(unique, "_unique", ""))
     # get the gene symbols
-    gene_symbols <- scpca_gene_reference[match(ensembl_ids, scpca_gene_reference$gene_ids), symbol_column]
+    id_match <- match(ensembl_ids, rOpenScPCA::scpca_gene_reference$gene_ids)
+    gene_symbols <- rOpenScPCA::scpca_gene_reference[id_match, symbol_column]
   } else {
     all_symbols <- rowData(sce)$gene_symbol
     if (unique) {
