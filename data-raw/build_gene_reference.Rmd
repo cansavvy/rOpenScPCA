@@ -102,7 +102,7 @@ How many of the gene symbols in the 10x 2020 reference are in the ScPCA data, bu
 
 ```{r}
 symbols_10x2020 <- scpca_missing$gene_symbol_10x2020[!is.na(scpca_missing$gene_symbol_10x2020)]
-sum(symbols_10x2020 %in% genes_scpca$gene_symbol)
+sum(symbols_10x2020 %in% genes_scpca$gene_symbol_scpca)
 ```
 
 What are they?
@@ -112,7 +112,7 @@ What are they?
 # Only for those where the gene id is missing in the ScPCA table
 genes_10x2020 |>
   filter(
-    gene_symbol_10x2020 %in% genes_scpca$gene_symbol,
+    gene_symbol_10x2020 %in% genes_scpca$gene_symbol_scpca,
     !gene_ids %in% genes_scpca$gene_ids
   ) |>
   left_join(genes_scpca, by = c("gene_symbol_10x2020" = "gene_symbol_scpca"))
