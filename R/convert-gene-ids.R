@@ -5,6 +5,8 @@
 #' for many applications gene symbols are useful. This function provides
 #' simple conversion of Ensembl gene ids to gene symbols based on either the
 #' ScPCA reference gene list or a 10x reference gene list as used by Cell Ranger.
+#' Alternatively, a SingleCellExperiment object with gene ids and gene symbols
+#' stored in the row data (as those provided by ScPCA) can be used as the reference.
 #'
 #' The gene symbols can either be made unique (as would be done if read in by Seurat)
 #' or left as is.
@@ -16,7 +18,8 @@
 #'   `10x2020`, `10x2024`. The `scpca` reference is the default.
 #' @param sce A SingleCellExperiment object to use as a reference for gene symbols.
 #'  If provided, the `reference` argument will be ignored. The `sce` object must
-#'  include columns with the names `gene_ids` and `gene_symbol` to use for conversion.
+#'  include columns with the names `gene_ids` (containing Ensembl ids) and
+#'  `gene_symbol` (containing the symbols) to use for conversion.
 #' @param unique Whether to use unique gene symbols, as would be done if
 #'  data had been read in with gene symbols by Seurat. Default is FALSE.
 #' @param leave_na Whether to leave NA values in the output vector.
@@ -34,6 +37,14 @@
 #' gene_symbols <- ensembl_to_symbol(ensembl_ids)
 #' gene_symbols
 #' ### [1] "TP53" "MYCN"
+#'
+#' # convert a set of Ensembl ids to gene symbols using the 10x2020 reference
+#' gene_symbols_10x2020 <- ensembl_to_symbol(ensembl_ids, reference = "10x2020")
+#'
+#' \dontrun{
+#' # convert a set of Ensembl ids to gene symbols using an SCE for reference
+#' gene_symbols_sce <- ensembl_to_symbol(ensembl_ids, sce = sce)
+#' }
 #'
 ensembl_to_symbol <- function(
     ensembl_ids,
@@ -58,6 +69,7 @@ ensembl_to_symbol <- function(
     id_match <- match(ensembl_ids, rOpenScPCA::scpca_gene_reference$gene_ids)
     gene_symbols <- rOpenScPCA::scpca_gene_reference[id_match, symbol_column]
   } else {
+    message("Using the provided SingleCellExperiment object for gene symbol conversion.")
     all_symbols <- rowData(sce)$gene_symbol
     if (unique) {
       all_symbols[!is.na(all_symbols)] <- make.unique(all_symbols[!is.na(all_symbols)])
@@ -66,6 +78,12 @@ ensembl_to_symbol <- function(
   }
 
   missing_symbols <- is.na(gene_symbols)
+  if (all(missing_symbols)) {
+    warning(
+      "None of the input ids have corresponding gene symbols.",
+      " You may want to check the reference and input ids."
+    )
+  }
   if (!leave_na && any(missing_symbols)) {
     warning("Not all input ids have corresponding gene symbols, using input ids for missing values.")
     gene_symbols[missing_symbols] <- ensembl_ids[missing_symbols]
@@ -81,16 +99,18 @@ ensembl_to_symbol <- function(
 #' for many applications gene symbols are useful. This function converts the
 #' row names (indexes) of a SingleCellExperiment object to gene symbols based on the
 #' `gene_symbol` column that is present in the row data of ScPCA SingleCellExperiment objects.
-#' It is also possible to use an alternative reference, such as the reference gene sets
-#' provided by 10x Genomics and used for Cell Ranger. Values for the 10x-provided 2020 and
-#' 2024 references are available.
+#' It is also possible to use an alternative reference, such as the default ScPCA
+#' reference gene sets or the reference gene sets provided by 10x Genomics for
+#' use with Cell Ranger. Values for the 10x-provided 2020 and 2024 references
+#' are available.
+#'
+#' By default, duplicate gene symbols are left as is, but can be made unique
+#' (as would be done by Seurat) by setting the `unique` argument to TRUE.
 #'
 #' Internal data structures such as the list of highly variable genes and the
 #' rotation matrix for the PCA are also updated to use gene symbols, if present
 #' (and not disabled by the `convert_hvg` and `convert_pca` arguments).
 #'
-#' Note that using this function will result in non-unique row ids as no
-#' de-duplication is currently performed.
 #'
 #' @param sce A SingleCellExperiment object containing gene ids and gene symbols.
 #' @param reference The reference gene list for conversion. One of `sce`, `scpca`,
@@ -98,7 +118,9 @@ ensembl_to_symbol <- function(
 #' @param unique Whether to use unique gene symbols, as would be done if
 #' data had been read in with gene symbols by Seurat. Default is FALSE.
 #' @param convert_hvg Logical indicating whether to convert highly variable genes to gene symbols.
+#'  Default is TRUE.
 #' @param convert_pca Logical indicating whether to convert PCA rotation matrix to gene symbols.
+#'  Default is TRUE.
 #'
 #' @return A SingleCellExperiment object with row names set as gene symbols.
 #' @export
@@ -110,7 +132,14 @@ ensembl_to_symbol <- function(
 #' \dontrun{
 #' # convert a SingleCellExperiment object to use gene symbols
 #' symbol_sce <- sce_to_symbols(sce)
+#'
+#' # convert a SingleCellExperiment object, making the gene symbols unique
+#' symbol_sce <- sce_to_symbols(sce, unique = TRUE)
+#'
+#' # convert a SingleCellExperiment object to use gene symbols with the 10x2020 reference
+#' symbol_sce <- sce_to_symbols(sce, reference = "10x2020")
 #' }
+#'
 sce_to_symbols <- function(
     sce,
     reference = c("sce", "scpca", "10x2020", "10x2024"),
@@ -130,7 +159,7 @@ sce_to_symbols <- function(
   } else {
     ensembl_ids <- rownames(sce)
   }
-  if (!all(startsWith(ensembl_ids, "ENSG"))) {
+  if (!all(grepl("^ENS(...)?G\\d+$", ensembl_ids))) {
     stop("gene_ids and/or row names are not all Ensembl ids, cannot convert to gene symbols.")
   }
 

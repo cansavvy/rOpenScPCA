@@ -21,7 +21,8 @@ gene symbols.}
 
 \item{sce}{A SingleCellExperiment object to use as a reference for gene symbols.
 If provided, the `reference` argument will be ignored. The `sce` object must
-include columns with the names `gene_ids` and `gene_symbol` to use for conversion.}
+include columns with the names `gene_ids` (containing Ensembl ids) and
+`gene_symbol` (containing the symbols) to use for conversion.}
 
 \item{unique}{Whether to use unique gene symbols, as would be done if
 data had been read in with gene symbols by Seurat. Default is FALSE.}
@@ -39,6 +40,8 @@ Ensembl gene ids, as those are more stable than gene symbols. However,
 for many applications gene symbols are useful. This function provides
 simple conversion of Ensembl gene ids to gene symbols based on either the
 ScPCA reference gene list or a 10x reference gene list as used by Cell Ranger.
+Alternatively, a SingleCellExperiment object with gene ids and gene symbols
+stored in the row data (as those provided by ScPCA) can be used as the reference.
 }
 \details{
 The gene symbols can either be made unique (as would be done if read in by Seurat)
@@ -50,5 +53,13 @@ ensembl_ids <- c("ENSG00000141510", "ENSG00000134323")
 gene_symbols <- ensembl_to_symbol(ensembl_ids)
 gene_symbols
 ### [1] "TP53" "MYCN"
+
+# convert a set of Ensembl ids to gene symbols using the 10x2020 reference
+gene_symbols_10x2020 <- ensembl_to_symbol(ensembl_ids, reference = "10x2020")
+
+\dontrun{
+# convert a set of Ensembl ids to gene symbols using an SCE for reference
+gene_symbols_sce <- ensembl_to_symbol(ensembl_ids, sce = sce)
+}
 
 }

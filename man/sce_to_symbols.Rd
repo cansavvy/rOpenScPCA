@@ -21,9 +21,11 @@ sce_to_symbols(
 \item{unique}{Whether to use unique gene symbols, as would be done if
 data had been read in with gene symbols by Seurat. Default is FALSE.}
 
-\item{convert_hvg}{Logical indicating whether to convert highly variable genes to gene symbols.}
+\item{convert_hvg}{Logical indicating whether to convert highly variable genes to gene symbols.
+Default is TRUE.}
 
-\item{convert_pca}{Logical indicating whether to convert PCA rotation matrix to gene symbols.}
+\item{convert_pca}{Logical indicating whether to convert PCA rotation matrix to gene symbols.
+Default is TRUE.}
 }
 \value{
 A SingleCellExperiment object with row names set as gene symbols.
@@ -34,21 +36,29 @@ Ensembl gene ids, as those are more stable than gene symbols. However,
 for many applications gene symbols are useful. This function converts the
 row names (indexes) of a SingleCellExperiment object to gene symbols based on the
 `gene_symbol` column that is present in the row data of ScPCA SingleCellExperiment objects.
-It is also possible to use an alternative reference, such as the reference gene sets
-provided by 10x Genomics and used for Cell Ranger. Values for the 10x-provided 2020 and
-2024 references are available.
+It is also possible to use an alternative reference, such as the default ScPCA
+reference gene sets or the reference gene sets provided by 10x Genomics for
+use with Cell Ranger. Values for the 10x-provided 2020 and 2024 references
+are available.
 }
 \details{
+By default, duplicate gene symbols are left as is, but can be made unique
+(as would be done by Seurat) by setting the `unique` argument to TRUE.
+
 Internal data structures such as the list of highly variable genes and the
 rotation matrix for the PCA are also updated to use gene symbols, if present
 (and not disabled by the `convert_hvg` and `convert_pca` arguments).
-
-Note that using this function will result in non-unique row ids as no
-de-duplication is currently performed.
 }
 \examples{
 \dontrun{
 # convert a SingleCellExperiment object to use gene symbols
 symbol_sce <- sce_to_symbols(sce)
+
+# convert a SingleCellExperiment object, making the gene symbols unique
+symbol_sce <- sce_to_symbols(sce, unique = TRUE)
+
+# convert a SingleCellExperiment object to use gene symbols with the 10x2020 reference
+symbol_sce <- sce_to_symbols(sce, reference = "10x2020")
 }
+
 }
