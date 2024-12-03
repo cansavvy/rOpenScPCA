@@ -80,7 +80,7 @@ scpca_gene_reference |>
 
 ### Disagreements between symbols
 
-One other question is how often the `unique` gene symbols disagree for the same Ensemble ID.
+One other question is how often the `unique` gene symbols disagree for the same Ensembl ID.
 Here we will exclude the cases where the gene symbol is an Ensembl ID in the ScPCA data, as these are expected to be different.
 
 ```{r}
@@ -104,7 +104,7 @@ scpca_gene_reference |>
   count(same_symbol)
 ```
 
-What we are really interested in is the cases where the process of making the gene symbol unique had different effects:
+What we are really interested in are the cases where the process of making the gene symbol unique had different effects:
 
 ```{r}
 scpca_gene_reference |>
