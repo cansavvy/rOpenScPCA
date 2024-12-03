@@ -1,0 +1,131 @@
+---
+title: "Gene ID conversion exploration"
+date: "`r Sys.Date()`"
+output: html_notebook
+---
+
+This notebook explores the table of gene conversions a bit, to get a bit of a sense of where different references might vary.
+
+The table includes the following reference data:
+
+- ScPCA reference, based on Ensembl 104
+- 10x 2020 reference, based on Ensembl 98
+- 10x 2024 reference, based on Ensembl 110
+
+We will focus on the ScPCA and 10x 2020 references for now, as few data sets include the 2024 reference at this point.
+One thing to note is that Ensembl 98 reference used BAC-based gene names for otherwise unnamed genes, but as of Ensmbl 104 (the base for the ScPCA reference), those were replaced with Ensembl ids.
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(dplyr)
+})
+```
+
+
+# Load the R data
+```{r}
+load(here::here("data", "scpca_gene_reference.rda"))
+```
+
+## Look at some stats for the tables
+
+We expect that many of the Ensembl IDs in the ScPCA data will not have corresponding values in the 10x references, but some of the 10x references have Ensembl IDs not present in the ScPCA data.
+Let's look at the number of missing gene symbols in the ScPCA data:
+
+```{r}
+scpca_missing <- scpca_gene_reference |>
+  filter(is.na(gene_symbol_scpca))
+```
+
+How many of the gene symbols in the 10x 2020 reference are in the ScPCA data, but perhaps with a different Ensembl ID?
+
+```{r}
+symbols_10x2020 <- scpca_missing$gene_symbol_10x2020[!is.na(scpca_missing$gene_symbol_10x2020)]
+sum(symbols_10x2020 %in% scpca_gene_reference$gene_symbol_scpca)
+```
+
+What are they?
+
+```{r}
+# Match the genes that are in the 10x 2020 reference to the ScPCA table on gene symbol
+# Only for those where the gene id is missing in the ScPCA table
+scpca_gene_reference |>
+  filter(
+    !is.na(gene_symbol_10x2020),
+    is.na(gene_symbol_scpca),
+    gene_symbol_10x2020 %in% scpca_gene_reference$gene_symbol_scpca
+  ) |>
+  select(gene_ids, gene_symbol_10x2020, gene_symbol_10x2020_unique) |>
+  left_join(
+    scpca_gene_reference |> select(gene_ids, gene_symbol_scpca, gene_symbol_scpca_unique),
+    by = c("gene_symbol_10x2020" = "gene_symbol_scpca"),
+    suffix = c("_10x2020", "_scpca")
+  )
+```
+
+Looks like these are all cases where the gene id has been updated.
+In only one case is this a gene where something was not unique, which is `LINC01505`.
+This gene (`ENSG00000234229`) seems to have simply been removed in later revisions, so I think we can safely not worry about it.
+
+```{r}
+scpca_gene_reference |>
+  filter(gene_symbol_10x2020 == "LINC01505")
+```
+
+In general, simply translating to the list gene symbols should work as expected.
+
+### BAC removal
+
+In Ensembl version 104, the version we are using for ScPCA, BAC-based gene IDs were removed and replaced with simply the Ensembl gene ID.
+Many of the gene symbols that are present in the 10x references but missing in the ScPCA data are these BAC-based gene IDs.
+We will probably want to translate these to the symbol used in the 10x reference when requested.
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    !is.na(gene_symbol_10x2020),
+    !gene_symbol_10x2020 %in% scpca_gene_reference$gene_symbol_scpca
+  )
+```
+
+### Disagreements between symbols
+
+One other question is how often the `unique` gene symbols disagree for the same Ensembl ID.
+Here we will exclude the cases where the gene symbol is an Ensembl ID in the ScPCA data, as these are expected to be different.
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    gene_symbol_scpca != gene_ids,
+    gene_symbol_scpca_unique != gene_symbol_10x2020_unique
+  )
+```
+
+More than I expected, but it looks like most of these are cases where the gene symbol has been updated.
+We can verify this by looking at how often the base symbol is the same.
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    gene_symbol_scpca != gene_ids,
+    gene_symbol_scpca_unique != gene_symbol_10x2020_unique,
+  ) |>
+  mutate(same_symbol = gene_symbol_scpca == gene_symbol_10x2020) |>
+  count(same_symbol)
+```
+
+What we are really interested in are the cases where the process of making the gene symbol unique had different effects:
+
+```{r}
+scpca_gene_reference |>
+  filter(
+    gene_symbol_scpca == gene_symbol_10x2020,
+    gene_symbol_scpca_unique != gene_symbol_10x2020_unique
+  )
+```
+
+This definitely happens more than I would have hoped, though my hope was probably unreasonable, as 14 cases is not bad.
+Which is to say that the best way to handle this is probably simply to translate using the the table directly when performing comparisons to existing data for the most accurate results.
+
+We will need to have clear instructions about when to use which kind of translation.

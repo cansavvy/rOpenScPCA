@@ -41,3 +41,5 @@ biocViews:
     Transcriptomics,
     SingleCell,
     Clustering
+Depends:
+    R (>= 4.0)
