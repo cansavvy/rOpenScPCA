@@ -1,8 +1,19 @@
 ---
-title: "Gene ID Conversion data setup"
+title: "Gene ID conversion exploration"
+date: "`r Sys.Date()`"
 output: html_notebook
 ---
 
+This notebook explores the table of gene conversions a bit, to get a bit of a sense of where different references might vary.
+
+The table includes the following reference data:
+
+- ScPCA reference, based on Ensembl 104
+- 10x 2020 reference, based on Ensembl 98
+- 10x 2024 reference, based on Ensembl 110
+
+We will focus on the ScPCA and 10x 2020 references for now, as few data sets include the 2024 reference at this point.
+One thing to note is that Ensembl 98 reference used BAC-based gene names for otherwise unnamed genes, but as of Ensmbl 104 (the base for the ScPCA reference), those were replaced with Ensembl ids.
 
 ```{r setup}
 suppressPackageStartupMessages({
