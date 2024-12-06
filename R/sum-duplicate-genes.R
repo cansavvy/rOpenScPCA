@@ -1,4 +1,4 @@
-#' Merge genes with duplicate names in a SingleCellExperiment object.
+#' Sum counts for genes with duplicate names in a SingleCellExperiment object.
 #'
 #' Genes with the same name are merged by summing their raw expression counts.
 #' If requested, the lognormalized expression values are recalculated, otherwise
@@ -6,12 +6,12 @@
 #'
 #'
 #' @param sce a SingleCellExperiment object with duplicated row names
-#' @param normalize a logical indicating whether to normalize the expression values.
-#'  default is TRUE
-#' @param recalculate_reduced_dims a logical indicating whether to recalculate PCA and UMAP.
-#'  If FALSE, the input reduced dimensions are copied over. If TRUE, the highly variable genes
-#'  are also recalculated with the new values stored in metadata.
-#'  default is FALSE
+#' @param normalize a logical indicating whether to normalize the expression
+#'   values. Default is TRUE
+#' @param recalculate_reduced_dims a logical indicating whether to recalculate
+#'   PCA and UMAP. If FALSE, the input reduced dimensions are copied over. If
+#'   TRUE, the highly variable genes are also recalculated with the new values
+#'   stored in metadata. Default is FALSE
 #'
 #' @return a SingleCellExperiment object
 #' @export
@@ -19,7 +19,7 @@
 #' @import SingleCellExperiment
 #' @import SummarizedExperiment
 #'
-merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
+sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
   stopifnot(
     "sce must be a SingleCellExperiment object" = is(sce, "SingleCellExperiment"),
     "normalize must be a logical" = is.logical(normalize),
@@ -62,7 +62,7 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
 
 
   # Build the new SingleCellExperiment object
-  merge_sce <- SingleCellExperiment(
+  summed_sce <- SingleCellExperiment(
     assays = assays,
     colData = colData(sce),
     metadata = metadata(sce),
@@ -76,10 +76,10 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
     try({
       # try to cluster similar cells
       # clustering may fail if < 100 cells in dataset
-      qclust <- suppressWarnings(scran::quickCluster(merge_sce))
-      merge_sce <- scran::computeSumFactors(merge_sce, clusters = qclust)
+      qclust <- suppressWarnings(scran::quickCluster(summed_sce))
+      summed_sce <- scran::computeSumFactors(summed_sce, clusters = qclust)
     })
-    merge_sce <- scuttle::logNormCounts(merge_sce)
+    summed_sce <- scuttle::logNormCounts(summed_sce)
   }
 
   # recalculate PCA if requested, using the same dimensions as before
@@ -90,13 +90,13 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
       pca_dim <- min(50, ncol(sce) - 1) # always reduce dimensions at least 1!
     }
 
-    hv_genes <- scran::modelGeneVar(merge_sce) |>
+    hv_genes <- scran::modelGeneVar(summed_sce) |>
       scran::getTopHVGs(n = length(metadata(sce)$highly_variable_genes))
-    metadata(merge_sce)$highly_variable_genes <- hv_genes # store the new HVGs
+    metadata(summed_sce)$highly_variable_genes <- hv_genes # store the new HVGs
 
-    merge_sce <- scater::runPCA(merge_sce, subset_row = hv_genes, ncomponents = pca_dim) |>
+    summed_sce <- scater::runPCA(summed_sce, subset_row = hv_genes, ncomponents = pca_dim) |>
       scater::runUMAP()
   }
 
-  return(merge_sce)
+  return(summed_sce)
 }
