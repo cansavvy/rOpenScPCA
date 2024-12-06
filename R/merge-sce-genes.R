@@ -17,8 +17,8 @@
 #' @export
 #'
 #' @import SingleCellExperiment
+#' @import SummarizedExperiment
 #'
-#' @examples
 merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
   stopifnot(
     "sce must be a SingleCellExperiment object" = is(sce, "SingleCellExperiment"),
@@ -28,10 +28,16 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
   )
   if (normalize) {
     stopifnot(
-      "Package `scran` must be installed if `normalize = TRUE` is set." = requireNamespace("scran", quietly = TRUE),
-      "Package `scuttle` must be installed if `normalize = TRUE` is set." = requireNamespace("scuttle", quietly = TRUE)
+      "Package `scran` must be installed if `normalize = TRUE` is set." =
+        requireNamespace("scran", quietly = TRUE),
+      "Package `scuttle` must be installed if `normalize = TRUE` is set." =
+        requireNamespace("scuttle", quietly = TRUE)
     )
   }
+  stopifnot(
+    "Package `scater` must be installed if `recalculate_reduced_dims = TRUE` is set." =
+      requireNamespace("scater", quietly = TRUE)
+  )
 
   if (!any(duplicated(rownames(sce)))) {
     message("No duplicated gene names found in the SingleCellExperiment object, returning original object")
@@ -39,13 +45,21 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
   }
 
   # calculate the reduced matrices
-  counts <- rowsum(counts(sce), rownames(sce))
+  counts <- rowsum(counts(sce), rownames(sce)) |> as("sparseMatrix")
   if ("spliced" %in% assayNames(sce)) {
-    spliced <- rowsum(assay(sce, "spliced"), rownames(sce))
+    spliced <- rowsum(assay(sce, "spliced"), rownames(sce)) |> as("sparseMatrix")
     assays <- list(counts = counts, spliced = spliced)
   } else {
     assays <- list(counts = counts)
   }
+
+
+  if (recalculate_reduced_dims) {
+    reduced_dims <- list()
+  } else {
+    reduced_dims <- reducedDims(sce)
+  }
+
 
   # Build the new SingleCellExperiment object
   merge_sce <- SingleCellExperiment(
@@ -53,14 +67,19 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
     colData = colData(sce),
     metadata = metadata(sce),
     # if we are not recalculating reduced dimensions, copy over previous (likely similar)
-    reducedDims = ifelse(recalculate_reduced_dims, list(), reducedDims(sce)),
+    reducedDims = reduced_dims,
     altExps = altExps(sce)
   )
 
   # Add normalized values if requested
   if (normalize) {
-    merge_sce <- scran::computeSumFactors(merge_sce, clusters = scran::quickCluster(sce)) |>
-      scuttle::logNormCounts()
+    try({
+      # try to cluster similar cells
+      # clustering may fail if < 100 cells in dataset
+      qclust <- suppressWarnings(scran::quickCluster(merge_sce))
+      merge_sce <- scran::computeSumFactors(merge_sce, clusters = qclust)
+    })
+    merge_sce <- scuttle::logNormCounts(merge_sce)
   }
 
   # recalculate PCA if requested, using the same dimensions as before
@@ -75,8 +94,8 @@ merge_sce_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FA
       scran::getTopHVGs(n = length(metadata(sce)$highly_variable_genes))
     metadata(merge_sce)$highly_variable_genes <- hv_genes # store the new HVGs
 
-    merge_sce <- scran::runPCA(merge_sce, subset_row = hv_genes, ncomponents = pca_dim) |>
-      scran::runUMAP()
+    merge_sce <- scater::runPCA(merge_sce, subset_row = hv_genes, ncomponents = pca_dim) |>
+      scater::runUMAP()
   }
 
   return(merge_sce)
