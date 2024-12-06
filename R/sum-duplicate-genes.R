@@ -1,7 +1,7 @@
 #' Sum counts for genes with duplicate names in a SingleCellExperiment object.
 #'
 #' Genes with the same name are merged by summing their raw expression counts.
-#' If requested, the lognormalized expression values are recalculated, otherwise
+#' If requested, the log-normalized expression values are recalculated, otherwise
 #' this is left blank.
 #'
 #'

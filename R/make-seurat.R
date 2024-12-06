@@ -10,12 +10,12 @@
 #'
 #'
 #' @param sce The input SCE object
-#' @param use_symbols Logical indicated whether the Seurat object use gene
+#' @param use_symbols Logical indicating whether the Seurat object uses gene
 #'   symbols for indexing. Default is TRUE.
 #' @param reference If `use_symbols` is TRUE, the reference to use for gene
 #'   symbols. One of `sce`, `scpca`, `10x2020`, `10x2024`, where `sce` uses the
 #'   symbols stored in the `gene_symbol` column of the SCE object's row data,
-#'   and the others use standardized translation tables. See `ensembl_to_symbol`
+#'   and the others use standardized translation tables. See `ensembl_to_symbol()`
 #'   for more information. Default is `sce`.
 #' @param dedup_method Method to handle duplicated gene symbols. If `unique`,
 #'   the gene symbols will be made unique following standard Seurat procedures.
