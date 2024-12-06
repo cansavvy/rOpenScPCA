@@ -66,11 +66,11 @@ sce_to_seurat <- function(
   reducedDims(sce) <- reducedDims(sce) |>
     purrr::map(\(mat) {
       # insert underscore between letters and numbers in axis labels
-      names <- gsub("([A-Za-z]+)([0-9]+)", "\\1_\\2", colnames(mat)) |>
+      rd_names <- gsub("([A-Za-z]+)([0-9]+)", "\\1_\\2", colnames(mat)) |>
         tolower()
-      colnames(mat) <- names
+      colnames(mat) <- rd_names
       if (!is.null(attr(mat, "rotation"))) {
-        colnames(attr(mat, "rotation")) <- names
+        colnames(attr(mat, "rotation")) <- rd_names
       }
       return(mat)
     })
@@ -92,9 +92,6 @@ sce_to_seurat <- function(
     sobj[["RNA"]]@var.features <- sce_meta$highly_variable_genes
     sce_meta$highly_variable_genes <- NULL # remove from metadata to avoid redundancy
   }
-
-  # move rotation to feature.loadings
-
 
   # convert and set functions depending on assay version requested
   if (seurat_assay_version == "v5") {
