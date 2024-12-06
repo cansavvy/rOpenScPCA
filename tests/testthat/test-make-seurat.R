@@ -120,3 +120,21 @@ test_that("SCE to Seurat with id conversion and 10x reference works as expected"
     dim(reducedDim(sce, "UMAP"))
   )
 })
+
+test_that("conversion works with altExps", {
+  sce <- readRDS(test_path("data", "scpca_sce.rds"))
+  altsce <- SingleCellExperiment(assays = list(counts = counts(sce), logcounts = logcounts(sce)))
+  altExps(sce) <- list(
+    alt1 = altsce,
+    alt2 = altsce
+  )
+
+  seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
+
+  expect_equal(dim(seurat_obj), dim(sce))
+  expect_setequal(rownames(seurat_obj), rownames(sce))
+  expect_setequal(colnames(seurat_obj), colnames(sce))
+
+  expect_setequal(names(seurat_obj@assays), c("RNA", "spliced", "alt1", "alt2"))
+  expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
+})

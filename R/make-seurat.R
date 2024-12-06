@@ -75,6 +75,10 @@ sce_to_seurat <- function(
       return(mat)
     })
 
+  # pull out any altExps to handle manually
+  alt_exps <- altExps(sce)
+  altExps(sce) <- NULL
+
   # Let Seurat do initial conversion to capture most things
   sobj <- Seurat::as.Seurat(sce)
 
@@ -105,6 +109,18 @@ sce_to_seurat <- function(
   # add spliced data if present
   if ("spliced" %in% assayNames(sce)) {
     sobj[["spliced"]] <- create_seurat_assay(counts = assay(sce, "spliced"))
+  }
+
+  # add altExps as needed.
+  for (alt_exp_name in names(alt_exps)) {
+    alt_exp <- alt_exps[[alt_exp_name]]
+    stopifnot(
+      "All altExps must contain a `counts` assay." = "counts" %in% assayNames(alt_exp)
+    )
+    sobj[[alt_exp_name]] <- create_seurat_assay(counts = counts(alt_exp))
+    if ("logcounts" %in% assayNames(alt_exp)) {
+      sobj[[alt_exp_name]]$data <- logcounts(alt_exp)
+    }
   }
 
   # add sample-level metadata after removing non-vector objects
