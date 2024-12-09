@@ -1,6 +1,6 @@
 #' Convert an SCE object to Seurat
 #'
-#' Converts A SingleCellExperiment (SCE) object to Seurat format. This is
+#' Converts an ScPCA SingleCellExperiment (SCE) object to Seurat format. This is
 #' primarily a wrapper around Seurat::as.Seurat() with some additional steps to
 #' include ScPCA metadata and options for converting the feature index from
 #' Ensembl gene ids to gene symbols.

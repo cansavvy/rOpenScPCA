@@ -82,7 +82,7 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
     summed_sce <- scuttle::logNormCounts(summed_sce)
   }
 
-  # recalculate PCA if requested, using the same dimensions as before
+  # recalculate PCA and UMAP if requested, using the same dimensions as before (if available)
   if (recalculate_reduced_dims) {
     if ("PCA" %in% reducedDimNames(sce)) {
       pca_dim <- ncol(reducedDim(sce, "PCA"))
