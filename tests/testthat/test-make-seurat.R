@@ -37,7 +37,9 @@ test_that("SCE to Seurat with no id conversion works", {
 
 test_that("SCE to Seurat with id conversion works as expected", {
   sce <- readRDS(test_path("data", "scpca_sce.rds"))
-  seurat_obj <- sce_to_seurat(sce, use_symbols = TRUE, reference = "sce")
+  expect_warning(
+    seurat_obj <- sce_to_seurat(sce, use_symbols = TRUE, reference = "sce")
+  )
 
   new_genes <- suppressMessages(
     ensembl_to_symbol(rownames(sce), unique = TRUE, sce = sce)

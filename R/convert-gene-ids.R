@@ -94,6 +94,9 @@ ensembl_to_symbol <- function(
   }
 
   if (seurat_compatible) {
+    if (any(grepl("_", gene_symbols))) {
+      warning("Replacing underscores ('_') with dashes ('-') in gene symbols for Seurat compatibility.")
+    }
     gene_symbols <- gsub("_", "-", gene_symbols)
   }
 

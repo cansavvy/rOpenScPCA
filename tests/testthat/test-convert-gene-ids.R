@@ -58,7 +58,9 @@ test_that("gene symbol conversion in seurat compatibility mode works", {
   expect_equal(gene_symbols, c("TP53", "MYCN"))
 
   ensembl_ids <- c("ENSG00000285609", "ENSG00000252254", "ENSG00000283274")
-  gene_symbols <- ensembl_to_symbol(ensembl_ids, unique = FALSE, seurat_compatible = TRUE)
+  expect_warning( # this includes name changes for compatibility, so a warning is expected
+    gene_symbols <- ensembl_to_symbol(ensembl_ids, unique = FALSE, seurat_compatible = TRUE)
+  )
   expect_equal(gene_symbols, c("5S-rRNA", "Y-RNA", "5-8S-rRNA"))
 })
 
