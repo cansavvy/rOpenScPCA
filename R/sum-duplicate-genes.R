@@ -76,8 +76,10 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
     try({
       # try to cluster similar cells
       # clustering may fail if < 100 cells in dataset
-      qclust <- suppressWarnings(scran::quickCluster(summed_sce))
-      summed_sce <- scran::computeSumFactors(summed_sce, clusters = qclust)
+      suppressWarnings({
+        qclust <- scran::quickCluster(summed_sce)
+        summed_sce <- scran::computeSumFactors(summed_sce, clusters = qclust)
+      })
     })
     summed_sce <- scuttle::logNormCounts(summed_sce)
   }
@@ -90,8 +92,13 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
       pca_dim <- min(50, ncol(sce) - 1) # always reduce dimensions at least 1!
     }
 
+    if (is.null(metadata(sce)$highly_variable_genes)) {
+      n_hvg <- 2000 # same default as ScPCA
+    } else {
+      n_hvg <- length(metadata(sce)$highly_variable_genes)
+    }
     hv_genes <- scran::modelGeneVar(summed_sce) |>
-      scran::getTopHVGs(n = length(metadata(sce)$highly_variable_genes))
+      scran::getTopHVGs(n = n_hvg)
     metadata(summed_sce)$highly_variable_genes <- hv_genes # store the new HVGs
 
     summed_sce <- scater::runPCA(summed_sce, subset_row = hv_genes, ncomponents = pca_dim) |>
