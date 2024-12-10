@@ -122,6 +122,18 @@ sce_to_seurat <- function(
     stopifnot(
       "All altExps must contain a `counts` assay." = "counts" %in% assayNames(alt_exp)
     )
+
+    # check name compatibility for Seurat
+    alt_exp_rownames <- rownames(alt_exp)
+    if (any(grepl("_", alt_exp_rownames))) {
+      warning(
+        "Replacing underscores ('_') with dashes ('-') in feature names from ",
+        alt_exp_name,
+        " for Seurat compatibility."
+      )
+      rownames(alt_exp) <- gsub("_", "-", alt_exp_rownames)
+    }
+
     sobj[[alt_exp_name]] <- create_seurat_assay(counts = counts(alt_exp))
     if ("logcounts" %in% assayNames(alt_exp)) {
       sobj[[alt_exp_name]]$data <- logcounts(alt_exp)

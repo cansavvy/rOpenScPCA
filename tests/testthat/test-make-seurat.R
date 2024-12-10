@@ -144,13 +144,15 @@ test_that("SCE to Seurat with id conversion and 10x reference works as expected"
 
 test_that("conversion works with altExps", {
   sce <- readRDS(test_path("data", "scpca_sce.rds"))
-  altsce <- SingleCellExperiment(assays = list(counts = counts(sce), logcounts = logcounts(sce)))
+  altsce1 <- SingleCellExperiment(assays = list(counts = counts(sce)[1:10, ], logcounts = logcounts(sce)[1:10, ]))
+  altsce2 <- SingleCellExperiment(assays = list(counts = counts(sce)[1:3, ]))
+  rownames(altsce2) <- c("F_1", "F_2", "F_3") # check feature names with underscores
   altExps(sce) <- list(
-    alt1 = altsce,
-    alt2 = altsce
+    alt1 = altsce1,
+    alt2 = altsce2
   )
 
-  seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
+  expect_warning(seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE))
   expect_s4_class(seurat_obj, "Seurat")
 
   expect_equal(dim(seurat_obj), dim(sce))
