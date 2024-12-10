@@ -208,3 +208,30 @@ test_that("Seurat v5 conversion works", {
     dim(reducedDim(sce, "UMAP"))
   )
 })
+
+test_that("Conversion works for non-processed samples", {
+  sce <- readRDS(test_path("data", "filtered_sce.rds"))
+  seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
+  expect_s4_class(seurat_obj, "Seurat")
+
+  expect_equal(dim(seurat_obj), dim(sce))
+  expect_setequal(rownames(seurat_obj), rownames(sce))
+  expect_setequal(colnames(seurat_obj), colnames(sce))
+
+  expect_equal(names(seurat_obj@assays), c("RNA", "spliced"))
+  expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
+
+  # assay types
+  expect_s4_class(seurat_obj[["RNA"]], "Assay")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+
+  # assay contents
+  expect_contains(
+    slotNames(seurat_obj[["RNA"]]),
+    c("counts", "data", "scale.data", "var.features", "meta.features")
+  )
+
+  expect_equal(seurat_obj[["RNA"]]$counts, counts(sce))
+
+  expect_null(names(seurat_obj@reductions))
+})

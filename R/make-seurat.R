@@ -80,7 +80,12 @@ sce_to_seurat <- function(
   altExps(sce) <- NULL
 
   # Let Seurat do initial conversion to capture most things
-  sobj <- Seurat::as.Seurat(sce)
+  if ("logcounts" %in% assayNames(sce)) {
+    data_name <- "logcounts"
+  } else {
+    data_name <- NULL
+  }
+  sobj <- Seurat::as.Seurat(sce, data = data_name)
 
   # update identity values, using cluster if present
   sce_meta <- metadata(sce)
