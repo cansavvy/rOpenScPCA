@@ -37,3 +37,13 @@ PCA and UMAP are also recalculated if requested (which requires recalculating
 the normalized expression). If not recalculating, the original reduced
 dimensions are retained as they are likely to remain similar in most cases.
 }
+\examples{
+\dontrun{
+# sum across duplicated gene names
+summed_sce <- sum_duplicate_genes(sce)
+
+# sum across duplicated gene names and recalculate PCA and UMAP
+summed_sce <- sum_duplicate_genes(sce, recalculate_reduced_dims = TRUE)
+}
+
+}

@@ -44,3 +44,19 @@ Ensembl gene ids to gene symbols.
 If present, reduced dimensions from SCE objects will be included, renamed to
 match Seurat default naming.
 }
+\examples{
+\dontrun{
+# convert an ScPCA SCE to Seurat renaming with gene symbols
+seurat_obj <- sce_to_seurat(sce)
+
+# convert SCE to Seurat keeping the current names (usually Ensembl)
+seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
+
+# convert SCE to Seurat, merging duplicated gene names
+seurat_obj <- sce_to_seurat(sce, dedup_method = "sum")
+
+# convert SCE to Seurat with v5 assay objects
+seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v5")
+}
+
+}

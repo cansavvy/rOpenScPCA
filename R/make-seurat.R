@@ -26,6 +26,21 @@
 #' @return a Seurat object
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' # convert an ScPCA SCE to Seurat renaming with gene symbols
+#' seurat_obj <- sce_to_seurat(sce)
+#'
+#' # convert SCE to Seurat keeping the current names (usually Ensembl)
+#' seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
+#'
+#' # convert SCE to Seurat, merging duplicated gene names
+#' seurat_obj <- sce_to_seurat(sce, dedup_method = "sum")
+#'
+#' # convert SCE to Seurat with v5 assay objects
+#' seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v5")
+#' }
+#'
 sce_to_seurat <- function(
     sce,
     use_symbols = TRUE,

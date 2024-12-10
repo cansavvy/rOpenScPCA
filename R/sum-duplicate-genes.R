@@ -30,6 +30,15 @@
 #' @import SingleCellExperiment
 #' @import SummarizedExperiment
 #'
+#' @examples
+#' \dontrun{
+#' # sum across duplicated gene names
+#' summed_sce <- sum_duplicate_genes(sce)
+#'
+#' # sum across duplicated gene names and recalculate PCA and UMAP
+#' summed_sce <- sum_duplicate_genes(sce, recalculate_reduced_dims = TRUE)
+#' }
+#'
 sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
   stopifnot(
     "sce must be a SingleCellExperiment object" = is(sce, "SingleCellExperiment"),
