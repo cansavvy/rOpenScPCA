@@ -10,12 +10,12 @@ sum_duplicate_genes(sce, normalize = TRUE, recalculate_reduced_dims = FALSE)
 \item{sce}{a SingleCellExperiment object with duplicated row names}
 
 \item{normalize}{a logical indicating whether to normalize the expression
-values. Default is TRUE}
+values. Default is TRUE.}
 
 \item{recalculate_reduced_dims}{a logical indicating whether to recalculate
 PCA and UMAP. If FALSE, the input reduced dimensions are copied over. If
 TRUE, the highly variable genes are also recalculated with the new values
-stored in metadata. Default is FALSE}
+stored in metadata. Default is FALSE.}
 }
 \value{
 a SingleCellExperiment object
