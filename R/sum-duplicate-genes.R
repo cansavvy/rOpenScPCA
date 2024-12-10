@@ -1,8 +1,19 @@
 #' Sum counts for genes with duplicate names in a SingleCellExperiment object.
 #'
 #' Genes with the same name are merged by summing their raw expression counts.
-#' If requested, the log-normalized expression values are recalculated, otherwise
-#' this is left blank.
+#' When multiple Ensembl gene IDs are associated with the same gene symbol,
+#' identifier conversion can result in duplicate gene names. This function
+#' resolves such duplicates by summing the expression values for each duplicate
+#' gene name, which may be justified if the different Ensembl gene IDs share
+#' substantial sequence identity, which could make separate quantification of
+#' the two genes less reliable.
+#'
+#' If requested, the log-normalized expression values are recalculated,
+#' otherwise that matrix is left blank.
+#'
+#' PCA and UMAP are also recalculated if requested (which requires recalculating
+#' the normalized expression). If not recalculating, the original reduced
+#' dimensions are retained as they are likely to remain similar in most cases.
 #'
 #'
 #' @param sce a SingleCellExperiment object with duplicated row names
