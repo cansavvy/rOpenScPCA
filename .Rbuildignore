@@ -6,3 +6,4 @@
 ^\.lintr$
 ^\.pre-commit-config.yaml$
 ^data-raw$
+^LICENSE\.md$
