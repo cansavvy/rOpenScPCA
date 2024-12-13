@@ -58,7 +58,9 @@ sce_to_seurat <- function(
       requireNamespace("SeuratObject", quietly = TRUE),
     "`sce` must be a SingleCellExperiment object." = is(sce, "SingleCellExperiment"),
     "`sce` must contain both `gene_ids` and `gene_symbol` columns in the row data if it is being used as a reference." =
-      reference != "sce" || all(c("gene_ids", "gene_symbol") %in% names(rowData(sce)))
+      reference != "sce" || all(c("gene_ids", "gene_symbol") %in% names(rowData(sce))),
+    "`sce` should only include a single library. Merged SingleCellExperiment objects are not (yet) supported." =
+      length(metadata(sce)$library_id) <= 1
   )
 
   if (use_symbols) {
