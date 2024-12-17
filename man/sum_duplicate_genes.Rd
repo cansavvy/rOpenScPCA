@@ -30,6 +30,11 @@ substantial sequence identity, which could make separate quantification of
 the two genes less reliable.
 }
 \details{
+The rowData for the summed SingleCellExperiment object is updated to reflect
+the new set of gene names. In each case, the first row for any duplicated id
+is retained. This may mean that for gene symbols that correspond to multiple
+Ensembl ids, the first Ensembl id is retained and the others are dropped.
+
 If requested, the log-normalized expression values are recalculated,
 otherwise that matrix is left blank.
 

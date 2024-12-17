@@ -24,7 +24,6 @@ Suggests:
     scran,
     Seurat,
     splatter,
-    scuttle,
     Matrix,
     SeuratObject
 Config/testthat/edition: 3
@@ -37,6 +36,7 @@ Imports:
     pdfCluster,
     purrr,
     S4Vectors,
+    scuttle,
     SingleCellExperiment,
     SummarizedExperiment,
     tibble,

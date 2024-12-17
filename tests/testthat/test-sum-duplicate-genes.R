@@ -5,7 +5,14 @@ test_that("merging works as expected", {
 
   expect_equal(dim(deduped_sce), dim(sce))
 
-  expect_setequal(rownames(deduped_sce), rownames(sce))
+  expect_equal(rownames(deduped_sce), rownames(sce))
+
+  expect_contains(
+    colnames(rowData(deduped_sce)),
+    c("gene_ids", "gene_symbol", "mean", "detected")
+  )
+  expect_equal(rowData(deduped_sce)$gene_ids, rowData(sce)$gene_ids)
+  expect_equal(rowData(deduped_sce)$gene_symbol, rowData(sce)$gene_symbol)
 
 
   expect_equal(
@@ -25,7 +32,14 @@ test_that("merging works as expected with unprocessed SCE", {
 
   expect_equal(dim(deduped_sce), dim(sce))
 
-  expect_setequal(rownames(deduped_sce), rownames(sce))
+  expect_equal(rownames(deduped_sce), rownames(sce))
+
+  expect_contains(
+    colnames(rowData(deduped_sce)),
+    c("gene_ids", "gene_symbol", "mean", "detected")
+  )
+  expect_equal(rowData(deduped_sce)$gene_ids, rowData(sce)$gene_ids)
+  expect_equal(rowData(deduped_sce)$gene_symbol, rowData(sce)$gene_symbol)
 
 
   expect_equal(

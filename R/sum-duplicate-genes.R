@@ -8,6 +8,11 @@
 #' substantial sequence identity, which could make separate quantification of
 #' the two genes less reliable.
 #'
+#' The rowData for the summed SingleCellExperiment object is updated to reflect
+#' the new set of gene names. In each case, the first row for any duplicated id
+#' is retained. This may mean that for gene symbols that correspond to multiple
+#' Ensembl ids, the first Ensembl id is retained and the others are dropped.
+#'
 #' If requested, the log-normalized expression values are recalculated,
 #' otherwise that matrix is left blank.
 #'
@@ -49,9 +54,7 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
   if (normalize) {
     stopifnot(
       "Package `scran` must be installed if `normalize = TRUE` is set." =
-        requireNamespace("scran", quietly = TRUE),
-      "Package `scuttle` must be installed if `normalize = TRUE` is set." =
-        requireNamespace("scuttle", quietly = TRUE)
+        requireNamespace("scran", quietly = TRUE)
     )
   }
   stopifnot(
@@ -65,14 +68,20 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
   }
 
   # calculate the reduced matrices
-  counts <- rowsum(counts(sce), rownames(sce)) |> as("sparseMatrix")
+  unique_rows <- unique(rownames(sce)) # new row names
+  counts <- rowsum(counts(sce), rownames(sce))[unique_rows, ] |> # keep order, mostly
+    as("sparseMatrix")
   if ("spliced" %in% assayNames(sce)) {
-    spliced <- rowsum(assay(sce, "spliced"), rownames(sce)) |> as("sparseMatrix")
+    spliced_names <- rownames(assay(sce, "spliced"))
+    spliced <- rowsum(assay(sce, "spliced"), spliced_names)[unique(spliced_names), ] |>
+      as("sparseMatrix")
     assays <- list(counts = counts, spliced = spliced)
   } else {
     assays <- list(counts = counts)
   }
 
+  # regenerate rowData, using first row for each duplicate
+  row_data <- rowData(sce)[unique_rows, ]
 
   if (recalculate_reduced_dims) {
     reduced_dims <- list()
@@ -81,26 +90,35 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
   }
 
 
+
   # Build the new SingleCellExperiment object
   summed_sce <- SingleCellExperiment(
     assays = assays,
+    rowData = row_data,
     colData = colData(sce),
     metadata = metadata(sce),
     # if we are not recalculating reduced dimensions, copy over previous (likely similar)
     reducedDims = reduced_dims,
     altExps = altExps(sce)
   )
+  # remove and replace existing Feature stats
+  rowData(summed_sce)$mean <- NULL
+  rowData(summed_sce)$detected <- NULL
+  summed_sce <- scuttle::addPerFeatureQCMetrics(summed_sce)
 
   # Add normalized values if requested
   if (normalize) {
-    try({
-      # try to cluster similar cells
-      # clustering may fail if < 100 cells in dataset
-      suppressWarnings({
-        qclust <- scran::quickCluster(summed_sce)
-        summed_sce <- scran::computeSumFactors(summed_sce, clusters = qclust)
-      })
-    })
+    try(
+      {
+        # try to cluster similar cells
+        # clustering may fail if < 100 cells in dataset
+        suppressWarnings({
+          qclust <- scran::quickCluster(summed_sce)
+          summed_sce <- scran::computeSumFactors(summed_sce, clusters = qclust)
+        })
+      },
+      silent = TRUE
+    )
     summed_sce <- scuttle::logNormCounts(summed_sce)
   }
 
