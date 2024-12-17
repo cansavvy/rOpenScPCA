@@ -11,13 +11,14 @@ test_that("SCE to Seurat with no id conversion works", {
   expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
 
-  # assay contents
+
+  # expected layers present
   expect_contains(
-    slotNames(seurat_obj[["RNA"]]),
-    c("counts", "data", "scale.data", "var.features", "meta.features")
+    names(seurat_obj[["RNA"]]@layers),
+    c("counts", "data", "scale.data")
   )
 
   expect_equal(seurat_obj[["RNA"]]$counts, counts(sce))
@@ -66,13 +67,13 @@ test_that("SCE to Seurat with id conversion works as expected", {
   expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
 
-  # assay contents
+  # expected layers present
   expect_contains(
-    slotNames(seurat_obj[["RNA"]]),
-    c("counts", "data", "scale.data", "var.features", "meta.features")
+    names(seurat_obj[["RNA"]]@layers),
+    c("counts", "data", "scale.data")
   )
 
   expect_equal(
@@ -116,13 +117,13 @@ test_that("SCE to Seurat with id conversion and 10x reference works as expected"
 
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
 
-  # assay contents
+  # expected layers present
   expect_contains(
-    slotNames(seurat_obj[["RNA"]]),
-    c("counts", "data", "scale.data", "var.features", "meta.features")
+    names(seurat_obj[["RNA"]]@layers),
+    c("counts", "data", "scale.data")
   )
 
   expect_equal(
@@ -163,15 +164,15 @@ test_that("conversion works with altExps", {
   expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay")
-  expect_s4_class(seurat_obj[["alt1"]], "Assay")
-  expect_s4_class(seurat_obj[["alt2"]], "Assay")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
+  expect_s4_class(seurat_obj[["alt1"]], "Assay5")
+  expect_s4_class(seurat_obj[["alt2"]], "Assay5")
 })
 
-test_that("Seurat v5 conversion works", {
+test_that("Seurat v3 conversion works", {
   sce <- readRDS(test_path("data", "scpca_sce.rds"))
-  seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE, seurat_assay_version = "v5")
+  seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE, seurat_assay_version = "v3")
   expect_s4_class(seurat_obj, "Seurat")
 
   expect_equal(dim(seurat_obj), dim(sce))
@@ -182,13 +183,13 @@ test_that("Seurat v5 conversion works", {
   expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay")
 
-  # expected layers present
+  # assay contents
   expect_contains(
-    names(seurat_obj[["RNA"]]@layers),
-    c("counts", "data", "scale.data")
+    slotNames(seurat_obj[["RNA"]]),
+    c("counts", "data", "scale.data", "var.features")
   )
 
   expect_equal(seurat_obj[["RNA"]]$counts, counts(sce))
@@ -224,13 +225,13 @@ test_that("Conversion works for non-processed samples", {
   expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
 
   # assay types
-  expect_s4_class(seurat_obj[["RNA"]], "Assay")
-  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
 
-  # assay contents
+  # expected layers present
   expect_contains(
-    slotNames(seurat_obj[["RNA"]]),
-    c("counts", "data", "scale.data", "var.features", "meta.features")
+    names(seurat_obj[["RNA"]]@layers),
+    c("counts", "data", "scale.data")
   )
 
   expect_equal(seurat_obj[["RNA"]]$counts, counts(sce))

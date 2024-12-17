@@ -120,12 +120,12 @@ sce_to_seurat <- function(
   }
 
   # convert and set functions depending on assay version requested
-  if (seurat_assay_version == "v5") {
-    create_seurat_assay <- SeuratObject::CreateAssay5Object
-    suppressWarnings(sobj[["RNA"]] <- as(sobj[["RNA"]], "Assay5"))
-  } else {
+  if (seurat_assay_version == "v3") {
     create_seurat_assay <- SeuratObject::CreateAssayObject
     suppressWarnings(sobj[["RNA"]] <- as(sobj[["RNA"]], "Assay"))
+  } else {
+    create_seurat_assay <- SeuratObject::CreateAssay5Object
+    suppressWarnings(sobj[["RNA"]] <- as(sobj[["RNA"]], "Assay5"))
   }
 
   # add spliced data if present
