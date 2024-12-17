@@ -6,4 +6,5 @@
 ^\.lintr$
 ^\.pre-commit-config.yaml$
 ^data-raw$
+^dependencies.R$
 ^LICENSE\.md$
