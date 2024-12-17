@@ -67,14 +67,30 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
     return(sce)
   }
 
-  # calculate the reduced matrices
+  # calculate the reduced matrices----------------------------------------------
   unique_rows <- unique(rownames(sce)) # new row names
-  counts <- rowsum(counts(sce), rownames(sce))[unique_rows, ] |> # keep order, mostly
-    as("sparseMatrix")
+
+  # break up counts and assay matrices to avoid large non-sparse matrices during calculation
+  set_size <- 2000
+  cell_sets <- seq(0, ncol(sce) - 1) %/% set_size
+  # make sure the last set is not length one
+  cell_sets[ncol(sce)] <- cell_sets[ncol(sce) - 1]
+
+  counts <- unique(cell_sets) |>
+    purrr::map(\(x) {
+      rowsum(counts(sce)[, cell_sets == x], rownames(sce))[unique_rows, ] |>
+        as("sparseMatrix")
+    }) |>
+    purrr::reduce(cbind)
+
   if ("spliced" %in% assayNames(sce)) {
     spliced_names <- rownames(assay(sce, "spliced"))
-    spliced <- rowsum(assay(sce, "spliced"), spliced_names)[unique(spliced_names), ] |>
-      as("sparseMatrix")
+    spliced <- unique(cell_sets) |>
+      purrr::map(\(x) {
+        rowsum(assay(sce, "spliced")[, cell_sets == x], spliced_names)[unique(spliced_names), ] |>
+          as("sparseMatrix")
+      }) |>
+      purrr::reduce(cbind)
     assays <- list(counts = counts, spliced = spliced)
   } else {
     assays <- list(counts = counts)

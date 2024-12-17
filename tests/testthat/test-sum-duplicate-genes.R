@@ -6,6 +6,7 @@ test_that("merging works as expected", {
   expect_equal(dim(deduped_sce), dim(sce))
 
   expect_equal(rownames(deduped_sce), rownames(sce))
+  expect_equal(colnames(deduped_sce), colnames(sce))
 
   expect_contains(
     colnames(rowData(deduped_sce)),
@@ -33,6 +34,7 @@ test_that("merging works as expected with unprocessed SCE", {
   expect_equal(dim(deduped_sce), dim(sce))
 
   expect_equal(rownames(deduped_sce), rownames(sce))
+  expect_equal(colnames(deduped_sce), colnames(sce))
 
   expect_contains(
     colnames(rowData(deduped_sce)),
