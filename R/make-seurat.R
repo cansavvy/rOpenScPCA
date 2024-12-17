@@ -20,8 +20,8 @@
 #' @param dedup_method Method to handle duplicated gene symbols. If `unique`,
 #'   the gene symbols will be made unique following standard Seurat procedures.
 #'   If `sum`, the expression values for each gene symbols will be summed.
-#' @param seurat_assay_version Whether to create Seurat `v3` or `v5` assay
-#'   objects. Default is `v3`.
+#' @param seurat_assay_version Whether to create Seurat `v5` or `v3` assay
+#'   objects. Default is `v5`.
 #'
 #' @return a Seurat object
 #' @export
@@ -37,8 +37,8 @@
 #' # convert SCE to Seurat, merging duplicated gene names
 #' seurat_obj <- sce_to_seurat(sce, dedup_method = "sum")
 #'
-#' # convert SCE to Seurat with v5 assay objects
-#' seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v5")
+#' # convert SCE to Seurat with v3 assay objects
+#' seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v3")
 #' }
 #'
 sce_to_seurat <- function(
@@ -46,7 +46,7 @@ sce_to_seurat <- function(
     use_symbols = TRUE,
     reference = c("sce", "scpca", "10x2020", "10x2024"),
     dedup_method = c("unique", "sum"),
-    seurat_assay_version = c("v3", "v5")) {
+    seurat_assay_version = c("v5", "v3")) {
   reference <- match.arg(reference)
   dedup_method <- match.arg(dedup_method)
   seurat_assay_version <- match.arg(seurat_assay_version)
