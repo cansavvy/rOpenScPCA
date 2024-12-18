@@ -28,6 +28,9 @@
 #'   PCA and UMAP. If FALSE, the input reduced dimensions are copied over. If
 #'   TRUE, the highly variable genes are also recalculated with the new values
 #'   stored in metadata. Default is FALSE.
+#' @param cell_set_size Because very large matrices can cause trouble, we break
+#'  the summing into submatrices with this many cells. Default is 5000, which
+#'  should be fine for most datasets.
 #'
 #' @return a SingleCellExperiment object
 #' @export
@@ -44,12 +47,16 @@
 #' summed_sce <- sum_duplicate_genes(sce, recalculate_reduced_dims = TRUE)
 #' }
 #'
-sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
+sum_duplicate_genes <- function(sce,
+                                normalize = TRUE,
+                                recalculate_reduced_dims = FALSE,
+                                cell_set_size = 5000) {
   stopifnot(
     "sce must be a SingleCellExperiment object" = is(sce, "SingleCellExperiment"),
     "normalize must be a logical" = is.logical(normalize),
     "recalculate_reduced_dims must be a logical" = is.logical(recalculate_reduced_dims),
-    "normalize can not be FALSE if recalculate_reduced_dims is TRUE" = normalize || !recalculate_reduced_dims
+    "normalize can not be FALSE if recalculate_reduced_dims is TRUE" = normalize || !recalculate_reduced_dims,
+    "cell_set_size should be an integer (much) greater than 1" = cell_set_size > 1 && cell_set_size %% 1 == 0
   )
   if (normalize) {
     stopifnot(
@@ -71,8 +78,7 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
   unique_rows <- unique(rownames(sce)) # new row names
 
   # break up counts and assay matrices to avoid large non-sparse matrices during calculation
-  set_size <- 5000
-  cell_sets <- seq(0, ncol(sce) - 1) %/% set_size
+  cell_sets <- seq(0, ncol(sce) - 1) %/% cell_set_size
   # make sure the last set is not length one
   cell_sets[ncol(sce)] <- cell_sets[ncol(sce) - 1]
 
