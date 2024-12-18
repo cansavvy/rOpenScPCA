@@ -357,14 +357,14 @@ calculate_stability <- function(
 #'
 #' sweep_list_evaled <- calculate_cell_cluster_metrics(
 #'   x = pc_mat,
-#'   sweep_list = sweep_list)
+#'   sweep_list = sweep_list
+#' )
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
                                            sweep_list,
                                            evals = c("purity", "silhouette"),
                                            ...) {
-
   supported_evals <- c("purity", "silhouette")
 
   # Check input arguments
