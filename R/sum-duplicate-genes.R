@@ -28,6 +28,9 @@
 #'   PCA and UMAP. If FALSE, the input reduced dimensions are copied over. If
 #'   TRUE, the highly variable genes are also recalculated with the new values
 #'   stored in metadata. Default is FALSE.
+#' @param cell_set_size Because very large matrices can cause trouble, we break
+#'  the summing into submatrices with this many cells. Default is 5000, which
+#'  should be fine for most datasets.
 #'
 #' @return a SingleCellExperiment object
 #' @export
@@ -44,12 +47,16 @@
 #' summed_sce <- sum_duplicate_genes(sce, recalculate_reduced_dims = TRUE)
 #' }
 #'
-sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims = FALSE) {
+sum_duplicate_genes <- function(sce,
+                                normalize = TRUE,
+                                recalculate_reduced_dims = FALSE,
+                                cell_set_size = 5000) {
   stopifnot(
     "sce must be a SingleCellExperiment object" = is(sce, "SingleCellExperiment"),
     "normalize must be a logical" = is.logical(normalize),
     "recalculate_reduced_dims must be a logical" = is.logical(recalculate_reduced_dims),
-    "normalize can not be FALSE if recalculate_reduced_dims is TRUE" = normalize || !recalculate_reduced_dims
+    "normalize can not be FALSE if recalculate_reduced_dims is TRUE" = normalize || !recalculate_reduced_dims,
+    "cell_set_size should be an integer (much) greater than 1" = cell_set_size > 1 && cell_set_size %% 1 == 0
   )
   if (normalize) {
     stopifnot(
@@ -67,14 +74,30 @@ sum_duplicate_genes <- function(sce, normalize = TRUE, recalculate_reduced_dims 
     return(sce)
   }
 
-  # calculate the reduced matrices
+  # calculate the reduced matrices----------------------------------------------
   unique_rows <- unique(rownames(sce)) # new row names
-  counts <- rowsum(counts(sce), rownames(sce))[unique_rows, ] |> # keep order, mostly
-    as("sparseMatrix")
+
+  # break up counts and assay matrices to avoid large non-sparse matrices during calculation
+  cell_sets <- seq(0, ncol(sce) - 1) %/% cell_set_size
+  # make sure the last set is not length one
+  cell_sets[ncol(sce)] <- cell_sets[ncol(sce) - 1]
+
+  counts <- unique(cell_sets) |>
+    purrr::map(\(x) {
+      rowsum(counts(sce)[, cell_sets == x], rownames(sce)) |>
+        as("sparseMatrix") |>
+        base::`[`(unique_rows, ) # reorder rows (faster with sparse)
+    }) |>
+    purrr::reduce(cbind)
+
   if ("spliced" %in% assayNames(sce)) {
-    spliced_names <- rownames(assay(sce, "spliced"))
-    spliced <- rowsum(assay(sce, "spliced"), spliced_names)[unique(spliced_names), ] |>
-      as("sparseMatrix")
+    spliced <- unique(cell_sets) |>
+      purrr::map(\(x) {
+        rowsum(assay(sce, "spliced")[, cell_sets == x], rownames(sce)) |>
+          as("sparseMatrix") |>
+          base::`[`(unique_rows, )
+      }) |>
+      purrr::reduce(cbind)
     assays <- list(counts = counts, spliced = spliced)
   } else {
     assays <- list(counts = counts)
