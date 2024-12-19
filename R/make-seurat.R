@@ -198,6 +198,10 @@ add_dummy_feature <- function(sce, feature_name = "null-feature") {
     )
     return(sce)
   }
+  if (feature_name %in% rownames(sce)) {
+    stop("A feature named `", feature_name, "` already exists in the SingleCellExperiment object.")
+  }
+
   # duplicate the existing row, rename
   sce <- sce[c(1, 1), ]
   rownames(sce) <- c(rownames(sce)[1], feature_name)
