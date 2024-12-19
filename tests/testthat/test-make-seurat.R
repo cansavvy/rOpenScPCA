@@ -264,7 +264,7 @@ test_that("conversion works with 1 feature altExps", {
 
 
   # test v3 conversion does not add a row
-  expect_nowarning(seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE, seurat_assay_version = "v3"))
+  expect_no_warning(seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE, seurat_assay_version = "v3"))
   expect_s4_class(seurat_obj, "Seurat")
 
   expect_setequal(names(seurat_obj@assays), c("RNA", "spliced", "alt1"))
