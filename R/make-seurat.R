@@ -136,9 +136,22 @@ sce_to_seurat <- function(
   # add altExps as needed.
   for (alt_exp_name in names(alt_exps)) {
     alt_exp <- alt_exps[[alt_exp_name]]
-    stopifnot(
-      "All altExps must contain a `counts` assay." = "counts" %in% assayNames(alt_exp)
-    )
+
+    if (!"counts" %in% assayNames(alt_exp)) {
+      warning(
+        "The altExp `", alt_exp_name,
+        "` does not have a `counts` assay, so it will be skipped."
+      )
+      next
+    }
+
+    if (nrow(alt_exp) == 1 && seurat_assay_version == "v5") {
+      warning(
+        "The altExp `", alt_exp_name, "` has only one feature;",
+        " for Seurat v5 compatibility, a dummy feature will be added with all zero counts."
+      )
+      alt_exp <- add_dummy_feature(alt_exp)
+    }
 
     # check name compatibility for Seurat
     alt_exp_rownames <- rownames(alt_exp)
@@ -166,4 +179,37 @@ sce_to_seurat <- function(
   sobj <- Seurat::ScaleData(sobj, assay = "RNA", verbose = FALSE)
 
   return(sobj)
+}
+
+
+#' Add a dummy feature to a SingleCellExperiment object with all zeros
+#'
+#' @param sce A SingleCellExperiment object. Should contain only one row/feature.
+#'   If larger, it will be returned unmodified.
+#' @param feature_name The name to give to the new dummy feature
+#'
+#' @returns A SingleCellExperiment object with a dummy feature added (all zeros)
+add_dummy_feature <- function(sce, feature_name = "null-feature") {
+  # add a dummy feature an SCE object
+  if (nrow(sce) > 1) {
+    message(
+      "No need for a dummy feature in a SingleCellExperiment object",
+      " with more than one row. Returning original object."
+    )
+    return(sce)
+  }
+  if (feature_name %in% rownames(sce)) {
+    stop("A feature named `", feature_name, "` already exists in the SingleCellExperiment object.")
+  }
+
+  # duplicate the existing row, rename
+  sce <- sce[c(1, 1), ]
+  rownames(sce) <- c(rownames(sce)[1], feature_name)
+  # set all rowData to NA, all assays to 0
+  rowData(sce)[feature_name, ] <- NA
+  assays(sce) <- assays(sce) |> purrr::map(\(x) {
+    x[feature_name, ] <- 0
+    return(x)
+  })
+  return(sce)
 }
