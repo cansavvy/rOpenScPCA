@@ -238,3 +238,44 @@ test_that("Conversion works for non-processed samples", {
 
   expect_null(names(seurat_obj@reductions))
 })
+
+test_that("conversion works with 1 feature altExps", {
+  sce <- readRDS(test_path("data", "scpca_sce.rds"))
+  altsce <- sce[1, ]
+  rownames(altsce) <- c("F1")
+  altExps(sce) <- list(
+    alt1 = altsce
+  )
+
+  expect_warning(seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE))
+  expect_s4_class(seurat_obj, "Seurat")
+
+  expect_setequal(names(seurat_obj@assays), c("RNA", "spliced", "alt1"))
+  expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
+
+  # assay types
+  expect_s4_class(seurat_obj[["RNA"]], "Assay5")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay5")
+  expect_s4_class(seurat_obj[["alt1"]], "Assay5")
+
+  expect_equal(nrow(seurat_obj[["alt1"]]), 2)
+  expect_setequal(rownames(seurat_obj[["alt1"]]), c("F1", "null-feature"))
+  expect_setequal(colnames(seurat_obj[["alt1"]]), colnames(sce))
+
+
+  # test v3 conversion does not add a row
+  expect_nowarning(seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE, seurat_assay_version = "v3"))
+  expect_s4_class(seurat_obj, "Seurat")
+
+  expect_setequal(names(seurat_obj@assays), c("RNA", "spliced", "alt1"))
+  expect_equal(Seurat::DefaultAssay(seurat_obj), "RNA")
+
+  # assay types
+  expect_s4_class(seurat_obj[["RNA"]], "Assay")
+  expect_s4_class(seurat_obj[["spliced"]], "Assay")
+  expect_s4_class(seurat_obj[["alt1"]], "Assay")
+
+  expect_equal(nrow(seurat_obj[["alt1"]]), 1)
+  expect_setequal(rownames(seurat_obj[["alt1"]]), c("F1"))
+  expect_setequal(colnames(seurat_obj[["alt1"]]), colnames(sce))
+})
