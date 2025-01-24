@@ -335,7 +335,7 @@ calculate_stability <- function(
 #' Default is to collect both purity and silhouette.
 #'
 #' @return An updated list of data frames with additional columns from running evaluation with
-#' `rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on 
+#' `rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on
 #'   `calculate_silhouette()` functions output.
 #'
 #' @export
