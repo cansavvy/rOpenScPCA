@@ -385,8 +385,7 @@ calculate_stability <- function(
 #'
 calculate_cell_cluster_metrics <- function(x,
                                            cluster_results,
-                                           metrics = c("purity", "silhouette"),
-                                           ...) {
+                                           metrics = c("purity", "silhouette")) {
   supported_evals <- c("purity", "silhouette")
 
   if (is.data.frame(cluster_results)) {
