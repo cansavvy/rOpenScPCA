@@ -9,7 +9,7 @@ sce_to_seurat(
   use_symbols = TRUE,
   reference = c("sce", "scpca", "10x2020", "10x2024"),
   dedup_method = c("unique", "sum"),
-  seurat_assay_version = c("v3", "v5")
+  seurat_assay_version = c("v5", "v3")
 )
 }
 \arguments{
@@ -28,8 +28,8 @@ for more information. Default is `sce`.}
 the gene symbols will be made unique following standard Seurat procedures.
 If `sum`, the expression values for each gene symbols will be summed.}
 
-\item{seurat_assay_version}{Whether to create Seurat `v3` or `v5` assay
-objects. Default is `v3`.}
+\item{seurat_assay_version}{Whether to create Seurat `v5` or `v3` assay
+objects. Default is `v5`.}
 }
 \value{
 a Seurat object
@@ -55,8 +55,8 @@ seurat_obj <- sce_to_seurat(sce, use_symbols = FALSE)
 # convert SCE to Seurat, merging duplicated gene names
 seurat_obj <- sce_to_seurat(sce, dedup_method = "sum")
 
-# convert SCE to Seurat with v5 assay objects
-seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v5")
+# convert SCE to Seurat with v3 assay objects
+seurat_obj <- sce_to_seurat(sce, seurat_assay_version = "v3")
 }
 
 }
