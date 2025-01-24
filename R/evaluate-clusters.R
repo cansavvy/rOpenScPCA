@@ -369,8 +369,7 @@ calculate_cell_cluster_metrics <- function(x,
 
   # Check input arguments
   stopifnot(
-    "`sweep_list` must be a list containing data.frames" = is.list(sweep_list),
-    "`sweep_list` must be a list containing data.frames" = is.data.frame(sweep_list[[1]]),
+    "`sweep_list` must be a list containing data.frames" = is.list(sweep_list) && is.data.frame(sweep_list[[1]]),
     " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(evals %in% supported_evals)
   )
 
