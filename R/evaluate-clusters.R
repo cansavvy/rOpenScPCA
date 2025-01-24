@@ -318,8 +318,8 @@ calculate_stability <- function(
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
-#' @param sweep_list A list of data frames obtained from `sweep_clusters()`. each data frame
-#'   in the list that contains at least two columns: one representing
+#' @param sweep_list A list of data frames obtained from `rOpenScPCA::sweep_clusters()`. Each data frame
+#'   in the list should contains at least two columns: one representing
 #'   unique cell ids, and one containing cluster assignments. By default, these columns
 #'   should be named `cell_id` and `cluster` respectively, though this can be customized.
 #'   The cell id column's values should match either the PC matrix row names, or the
@@ -351,20 +351,20 @@ calculate_stability <- function(
 #'   algorithm = "walktrap",
 #'   weighting = "jaccard",
 #'   nn = c(10, 15, 25),
-#'   resolution = c(.75, 1),
+#'   resolution = c(0.75, 1),
 #'   seed = 9
 #' )
 #'
 #' sweep_list_evaled <- calculate_cell_cluster_metrics(
 #'   x = pc_mat,
-#'   sweep_list = sweep_list)
+#'   sweep_list = sweep_list
+#' )
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
                                            cluster_results,
                                            metric = c("purity", "silhouette"),
                                            ...) {
-
   supported_evals <- c("purity", "silhouette")
 
   if (is.data.frame(cluster_results)) {
@@ -373,8 +373,7 @@ calculate_cell_cluster_metrics <- function(x,
 
   # Check input arguments
   stopifnot(
-    "`sweep_list` must be a list containing data.frames" = is.list(sweep_list),
-    "`sweep_list` must be a list containing data.frames" = is.data.frame(sweep_list[[1]]),
+    "`sweep_list` must be a list containing data.frames" = is.list(sweep_list) && is.data.frame(sweep_list[[1]]),
     " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(evals %in% supported_evals)
   )
 }

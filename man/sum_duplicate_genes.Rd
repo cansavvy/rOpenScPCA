@@ -4,7 +4,12 @@
 \alias{sum_duplicate_genes}
 \title{Sum counts for genes with duplicate names in a SingleCellExperiment object.}
 \usage{
-sum_duplicate_genes(sce, normalize = TRUE, recalculate_reduced_dims = FALSE)
+sum_duplicate_genes(
+  sce,
+  normalize = TRUE,
+  recalculate_reduced_dims = FALSE,
+  cell_set_size = 5000
+)
 }
 \arguments{
 \item{sce}{a SingleCellExperiment object with duplicated row names}
@@ -16,6 +21,10 @@ values. Default is TRUE.}
 PCA and UMAP. If FALSE, the input reduced dimensions are copied over. If
 TRUE, the highly variable genes are also recalculated with the new values
 stored in metadata. Default is FALSE.}
+
+\item{cell_set_size}{Because very large matrices can cause trouble, we break
+the summing into submatrices with this many cells. Default is 5000, which
+should be fine for most datasets.}
 }
 \value{
 a SingleCellExperiment object
@@ -30,6 +39,11 @@ substantial sequence identity, which could make separate quantification of
 the two genes less reliable.
 }
 \details{
+The rowData for the summed SingleCellExperiment object is updated to reflect
+the new set of gene names. In each case, the first row for any duplicated id
+is retained. This may mean that for gene symbols that correspond to multiple
+Ensembl ids, the first Ensembl id is retained and the others are dropped.
+
 If requested, the log-normalized expression values are recalculated,
 otherwise that matrix is left blank.
 
