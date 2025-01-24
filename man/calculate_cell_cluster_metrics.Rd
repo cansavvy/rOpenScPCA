@@ -7,8 +7,7 @@
 calculate_cell_cluster_metrics(
   x,
   cluster_results,
-  metrics = c("purity", "silhouette"),
-  ...
+  metrics = c("purity", "silhouette")
 )
 }
 \arguments{
@@ -30,8 +29,8 @@ output from the `rOpenScPCA::calculate_clusters()` function.}
 Default is to collect both purity and silhouette.}
 }
 \value{
-A list of data frames with the original `sweep_clusters()` information as well as the additional
-  columns with evaluation information from the `calculate_purity()` and
+An updated list of data frames with additional columns from running evaluation with
+`rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on
   `calculate_silhouette()` functions output.
 }
 \description{
