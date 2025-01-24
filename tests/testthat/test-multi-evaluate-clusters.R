@@ -6,7 +6,6 @@ sce_object <- readRDS(test_path("data", "scpca_sce.rds"))
 pc_mat <- reducedDim(sce_object, "PCA")
 
 test_that("test single calculate_cell_cluster_metrics()", {
-
   cluster_df <- calculate_clusters(
     pc_mat,
     algorithm = "leiden",
@@ -26,19 +25,17 @@ test_that("test single calculate_cell_cluster_metrics()", {
   testthat::expect_named(
     single_evaled,
     c(
-      'cell_id', 'cluster', 'algorithm', 'weighting', 'nn', 'resolution',
-      'objective_function', 'purity', 'maximum_neighbor', 'silhouette_other',
-      'silhouette_width'
+      "cell_id", "cluster", "algorithm", "weighting", "nn", "resolution",
+      "objective_function", "purity", "maximum_neighbor", "silhouette_other",
+      "silhouette_width"
     )
   )
 
   # Don't expect NAs
   testthat::expect_true(all(!is.na(single_evaled)))
-
 })
 
 test_that("test multiple calculate_cell_cluster_metrics()", {
-
   sweep_list <- sweep_clusters(
     sce_object,
     algorithm = "walktrap",
