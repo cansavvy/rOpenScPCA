@@ -338,15 +338,10 @@ calculate_stability <- function(
 #' @examples
 #' \dontrun{
 #'
+#' # Setting the seed is a good idea
 #' set.seed(2024)
 #'
-#' sce_object <- splatter::simpleSimulate(nGenes = 1000, verbose = FALSE) |>
-#'   scater::logNormCounts() |>
-#'   scater::runPCA(ncomponents = 10)
-#'
-#' # Calculate Principal Components
-#' pc_mat <- reducedDim(sce_object, "PCA")
-#'
+#' # If we obtain a list of clusters like so...
 #' sweep_list <- sweep_clusters(
 #'   sce_object,
 #'   algorithm = "walktrap",
@@ -356,6 +351,8 @@ calculate_stability <- function(
 #'   seed = 9
 #' )
 #'
+#' # Then we can evaluate these cluster stats with
+#' # calculate_cell_cluster_metrics:
 #' sweep_list_evaled <- calculate_cell_cluster_metrics(
 #'   x = pc_mat,
 #'   cluster_results = sweep_list
