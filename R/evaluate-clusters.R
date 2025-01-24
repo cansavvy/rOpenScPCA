@@ -376,8 +376,6 @@ calculate_stability <- function(
 #'   x = pc_mat,
 #'   cluster_results = sweep_list
 #' )
-#'
-#'
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
