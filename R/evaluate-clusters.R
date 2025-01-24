@@ -334,8 +334,8 @@ calculate_stability <- function(
 #' @param metrics Which metrics should be collected? Options are one or both of "purity" or "silhouette".
 #' Default is to collect both purity and silhouette.
 #'
-#' @return A list of data frames with the original `sweep_clusters()` information as well as the additional
-#'   columns with evaluation information from the `calculate_purity()` and
+#' @return An updated list of data frames with additional columns from running evaluation with
+#' `rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on 
 #'   `calculate_silhouette()` functions output.
 #'
 #' @export
