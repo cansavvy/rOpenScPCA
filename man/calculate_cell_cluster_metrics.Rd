@@ -85,8 +85,6 @@ sweep_list_evaled <- calculate_cell_cluster_metrics(
   x = pc_mat,
   cluster_results = sweep_list
 )
-
-
 }
 
 }
