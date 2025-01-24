@@ -341,6 +341,25 @@ calculate_stability <- function(
 #' # Setting the seed is a good idea
 #' set.seed(2024)
 #'
+#' # Calculate Principal Components
+#' pca_matrix <- reducedDim(sce_object, "PCA")
+#'
+#' # We can put in a single data frame of cluster results:
+#' cluster_df <- calculate_clusters(
+#'   pca_matrix,
+#'   algorithm = "leiden",
+#'   resolution = 0.1,
+#'   seed = 11
+#' )
+#'
+#' # Then we can evaluate these cluster stats with
+#' # calculate_cell_cluster_metrics:
+#' sweep_list_evaled <- calculate_cell_cluster_metrics(
+#'   x = pca_matrix,
+#'   cluster_results = cluster_df
+#' )
+#'
+#' ######### Evaluate a list of multiple cluster results ############
 #' # If we obtain a list of clusters like so...
 #' sweep_list <- sweep_clusters(
 #'   sce_object,
@@ -357,6 +376,8 @@ calculate_stability <- function(
 #'   x = pc_mat,
 #'   cluster_results = sweep_list
 #' )
+#'
+#'
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
@@ -370,11 +391,11 @@ calculate_cell_cluster_metrics <- function(x,
   }
   # Check input arguments
   stopifnot(
-    "`cluster_results` must be a list containing data.frames" = is.list(sweep_list) && is.data.frame(sweep_list[[1]]),
+    "`cluster_results` must be a list containing data.frames" = is.list(cluster_results) && is.data.frame(cluster_results[[1]]),
     " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(metrics %in% supported_evals)
   )
 
-  evaled_list <- sweep_list |>
+  evaled_list <- cluster_results |>
     purrr::map(
       \(df) {
         if ("purity" %in% metrics) {
@@ -395,5 +416,12 @@ calculate_cell_cluster_metrics <- function(x,
       }
     )
 
-  return(evaled_list)
+  # if there's only one data.frame input then let's just output a data frame
+  if (length(evaled_list) == 1) {
+    result <- evaled_list[[1]]
+  } else {
+    result <- evaled_list
+  }
+
+  return(result)
 }
