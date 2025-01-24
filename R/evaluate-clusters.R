@@ -366,9 +366,7 @@ calculate_cell_cluster_metrics <- function(x,
   supported_evals <- c("purity", "silhouette")
 
   if (is.data.frame(cluster_results)) {
-
     cluster_results <- list(cluster_results)
-
   }
   # Check input arguments
   stopifnot(
