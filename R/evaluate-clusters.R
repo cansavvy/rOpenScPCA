@@ -312,7 +312,7 @@ calculate_stability <- function(
 #'
 #' This wrapper function can be used to evaluate clusters calculated using `sweep_clusters()` function.
 #' Input should be be a list of data frames with the resulting clusters from all parameter combinations provided to
-#' the `sweep_clusters()` function. Output
+#' the `sweep_clusters()` function. Output is a list of results.
 #'
 #' @param x An object containing PCs that clusters were calculated from. This can be
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
@@ -325,8 +325,8 @@ calculate_stability <- function(
 #'   The cell id column's values should match either the PC matrix row names, or the
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
-#' @param ... Additional argument are passed on to the respective `calculate_purity()` and
-#' `calculate_silhouette()` functions.
+#' @param metric Which metrics should be collected? Options are one or both of "purity" or "silhouette".
+#' Default is to collect both purity and silhouette.
 #'
 #' @return A list of data frames with the original `sweep_clusters()` information as well as the additional
 #'   columns with evaluation information from the `calculate_purity()` and
@@ -361,11 +361,15 @@ calculate_stability <- function(
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
-                                           sweep_list,
-                                           evals = c("purity", "silhouette"),
+                                           cluster_results,
+                                           metric = c("purity", "silhouette"),
                                            ...) {
 
   supported_evals <- c("purity", "silhouette")
+
+  if (is.data.frame(cluster_results)) {
+    cluster_results <- list(cluster_results)
+  } else {
 
   # Check input arguments
   stopifnot(
@@ -373,7 +377,7 @@ calculate_cell_cluster_metrics <- function(x,
     "`sweep_list` must be a list containing data.frames" = is.data.frame(sweep_list[[1]]),
     " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(evals %in% supported_evals)
   )
-
+}
 
   evaled_list <- sweep_list |>
     purrr::map(

@@ -188,3 +188,20 @@ test_that("calculate_stability errors as expected", {
     calculate_stability(test_mat, cluster_df_extra)
   })
 })
+
+
+
+test_that("Test calculating cell cluster metrics", {
+
+  sweep_list <- sweep_clusters(
+    sce,
+    algorithm = c("walktrap", "louvain"),
+    weighting = "jaccard",
+    nn = c(10, 15, 20, 25),
+    resolution = c(0.5, 1),
+    seed = 11
+  )
+
+  sweep_list_evaled <- calculate_cell_cluster_metrics(sweep_list)
+
+})
