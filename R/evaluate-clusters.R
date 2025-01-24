@@ -350,7 +350,7 @@ calculate_stability <- function(
 #'   algorithm = "walktrap",
 #'   weighting = "jaccard",
 #'   nn = c(10, 15, 25),
-#'   resolution = c(.75, 1),
+#'   resolution = c(0.75, 1),
 #'   seed = 9
 #' )
 #'
