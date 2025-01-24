@@ -318,13 +318,12 @@ calculate_stability <- function(
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
-#' @param sweep_list A list of data frames obtained from `sweep_clusters()`. each data frame
-#'   in the list that contains at least two columns: one representing
+#' @param sweep_list A list of data frames obtained from `rOpenScPCA::sweep_clusters()`. Each data frame
+#'   in the list should contains at least two columns: one representing
 #'   unique cell ids, and one containing cluster assignments. By default, these columns
 #'   should be named `cell_id` and `cluster` respectively, though this can be customized.
 #'   The cell id column's values should match either the PC matrix row names, or the
-#'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
-#'   output from the `rOpenScPCA::calculate_clusters()` function.
+#'   SingleCellExperiment/Seurat object cell ids. 
 #' @param ... Additional argument are passed on to the respective `calculate_purity()` and
 #' `calculate_silhouette()` functions.
 #'
