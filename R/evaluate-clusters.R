@@ -310,7 +310,7 @@ calculate_stability <- function(
 
 #' Evaluate cluster results
 #'
-#' This wrapper function can be used to evaluate clusters from a single clustering calcuation or a list
+#' This wrapper function can be used to evaluate clusters from a single clustering calculation or a list
 #' calculated using `sweep_clusters()` function.
 #' Input should be be a data frame from a single `calculate_clusters()` call
 #' or a list of data frames with the resulting clusters from all parameter
