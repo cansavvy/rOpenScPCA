@@ -23,28 +23,25 @@ sweep_list <- sweep_clusters(
 
 
 test_that("multiplication works", {
-
-calculate_cell_cluster_metrics <- function() {
-
-  purity_list <- sweep_list |>
-    purrr::map(
-      \(df) {
-        calculate_purity(
-          x = test_mat,
-          cluster_df = df
-        )
+  calculate_cell_cluster_metrics <- function() {
+    purity_list <- sweep_list |>
+      purrr::map(
+        \(df) {
+          calculate_purity(
+            x = test_mat,
+            cluster_df = df
+          )
         }
-    )
+      )
 
-  silhoutte_list <- sweep_list |>
-    purrr::map(
-      \(df) {
-        calculate_silhouette(
-          x = test_mat,
-          cluster_df = sweep_list[[2]]
-        )
+    silhoutte_list <- sweep_list |>
+      purrr::map(
+        \(df) {
+          calculate_silhouette(
+            x = test_mat,
+            cluster_df = sweep_list[[2]]
+          )
         }
-    )
-}
-
+      )
+  }
 })
