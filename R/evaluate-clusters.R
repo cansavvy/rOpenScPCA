@@ -394,8 +394,10 @@ calculate_cell_cluster_metrics <- function(x,
   }
   # Check input arguments
   stopifnot(
-    "`cluster_results` must be a list containing data.frames" = is.list(cluster_results) && is.data.frame(cluster_results[[1]]),
-    " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(metrics %in% supported_evals)
+    "`cluster_results` must be a list containing data.frames" =
+      is.list(cluster_results) && is.data.frame(cluster_results[[1]]),
+    " Cluster `evals` that are supported are only 'purity' and 'silhouette'" =
+      all(metrics %in% supported_evals)
   )
 
   evaled_list <- cluster_results |>
