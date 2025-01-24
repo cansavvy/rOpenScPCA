@@ -323,7 +323,7 @@ calculate_stability <- function(
 #'   unique cell ids, and one containing cluster assignments. By default, these columns
 #'   should be named `cell_id` and `cluster` respectively, though this can be customized.
 #'   The cell id column's values should match either the PC matrix row names, or the
-#'   SingleCellExperiment/Seurat object cell ids. 
+#'   SingleCellExperiment/Seurat object cell ids.
 #' @param ... Additional argument are passed on to the respective `calculate_purity()` and
 #' `calculate_silhouette()` functions.
 #'
