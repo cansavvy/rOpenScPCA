@@ -318,14 +318,15 @@ calculate_stability <- function(
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
-#' @param sweep_list A list of data frames obtained from `rOpenScPCA::sweep_clusters()`. Each data frame
-#'   in the list should contains at least two columns: one representing
-#'   unique cell ids, and one containing cluster assignments. By default, these columns
-#'   should be named `cell_id` and `cluster` respectively, though this can be customized.
-#'   The cell id column's values should match either the PC matrix row names, or the
+#' @param cluster_results A single data frame or list of data frames obtained from
+#'   `rOpenScPCA::sweep_clusters()`. Each data frame in the list should contains
+#'   at least two columns: one representing unique cell ids, and one containing
+#'   cluster assignments. By default, these columns should be named `cell_id` and
+#'   `cluster` respectively, though this can be customized. The cell id column's
+#'   values should match either the PC matrix row names, or the
 #'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
 #'   output from the `rOpenScPCA::calculate_clusters()` function.
-#' @param metric Which metrics should be collected? Options are one or both of "purity" or "silhouette".
+#' @param metrics Which metrics should be collected? Options are one or both of "purity" or "silhouette".
 #' Default is to collect both purity and silhouette.
 #'
 #' @return A list of data frames with the original `sweep_clusters()` information as well as the additional
@@ -357,38 +358,38 @@ calculate_stability <- function(
 #'
 #' sweep_list_evaled <- calculate_cell_cluster_metrics(
 #'   x = pc_mat,
-#'   sweep_list = sweep_list
+#'   cluster_results = sweep_list
 #' )
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
                                            cluster_results,
-                                           metric = c("purity", "silhouette"),
+                                           metrics = c("purity", "silhouette"),
                                            ...) {
   supported_evals <- c("purity", "silhouette")
 
   if (is.data.frame(cluster_results)) {
-    cluster_results <- list(cluster_results)
-  } else {
 
+    cluster_results <- list(cluster_results)
+
+  }
   # Check input arguments
   stopifnot(
-    "`sweep_list` must be a list containing data.frames" = is.list(sweep_list) && is.data.frame(sweep_list[[1]]),
-    " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(evals %in% supported_evals)
+    "`cluster_results` must be a list containing data.frames" = is.list(sweep_list) && is.data.frame(sweep_list[[1]]),
+    " Cluster `evals` that are supported are only 'purity' and 'silhouette'" = all(metrics %in% supported_evals)
   )
-}
 
   evaled_list <- sweep_list |>
     purrr::map(
       \(df) {
-        if ("purity" %in% evals) {
+        if ("purity" %in% metrics) {
           df <- calculate_purity(
             x = x,
             cluster_df = df,
             ...
           )
         }
-        if ("silhouette" %in% evals) {
+        if ("silhouette" %in% metrics) {
           df <- calculate_silhouette(
             x = x,
             cluster_df = df,
