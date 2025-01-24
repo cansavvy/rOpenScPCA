@@ -308,11 +308,16 @@ calculate_stability <- function(
   return(all_ari_df)
 }
 
-#' Evaluate set of clusters
+#' Evaluate cluster results
 #'
-#' This wrapper function can be used to evaluate clusters calculated using `sweep_clusters()` function.
-#' Input should be be a list of data frames with the resulting clusters from all parameter combinations provided to
-#' the `sweep_clusters()` function. Output is a list of results.
+#' This wrapper function can be used to evaluate clusters from a single clustering calcuation or a list
+#' calculated using `sweep_clusters()` function.
+#' Input should be be a data frame from a single `calculate_clusters()` call
+#' or a list of data frames with the resulting clusters from all parameter
+#' combinations provided to the `sweep_clusters()` function.
+#' Output is a list of results or a single data.frame depending on what was provided.
+#' Evaluation statistics are added in the form of columns to the original cluster
+#' object provided.
 #'
 #' @param x An object containing PCs that clusters were calculated from. This can be
 #'   either a SingleCellExperiment object, a Seurat object, or a matrix where columns
@@ -376,8 +381,6 @@ calculate_stability <- function(
 #'   x = pc_mat,
 #'   cluster_results = sweep_list
 #' )
-#'
-#'
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,
