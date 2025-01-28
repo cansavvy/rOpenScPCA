@@ -324,19 +324,17 @@ calculate_stability <- function(
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
 #' @param cluster_results A single data frame or list of data frames obtained from
-#'   `rOpenScPCA::sweep_clusters()`. Each data frame in the list should contains
+#'  `rOpenScPCA::calculate_clusters()` or `rOpenScPCA::sweep_clusters()` respectively. Each data frame in the list should contain
 #'   at least two columns: one representing unique cell ids, and one containing
 #'   cluster assignments. By default, these columns should be named `cell_id` and
 #'   `cluster` respectively, though this can be customized. The cell id column's
 #'   values should match either the PC matrix row names, or the
-#'   SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
-#'   output from the `rOpenScPCA::calculate_clusters()` function.
+#'   SingleCellExperiment/Seurat object cell ids.
 #' @param metrics Which metrics should be collected? Options are one or both of "purity" or "silhouette".
 #' Default is to collect both purity and silhouette.
 #'
 #' @return An updated list of data frames with additional columns from running evaluation with
 #' `rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on
-#'   `calculate_silhouette()` functions output.
 #'
 #' @export
 #'
@@ -378,7 +376,7 @@ calculate_stability <- function(
 #' # Then we can evaluate these cluster stats with
 #' # calculate_cell_cluster_metrics:
 #' sweep_list_evaled <- calculate_cell_cluster_metrics(
-#'   x = pc_mat,
+#'   x = pca_matrix,
 #'   cluster_results = sweep_list
 #' )
 #' }
@@ -394,7 +392,7 @@ calculate_cell_cluster_metrics <- function(x,
   # Check input arguments
   stopifnot(
     "`cluster_results` must be a list containing data.frames" =
-      is.list(cluster_results) && is.data.frame(cluster_results[[1]]),
+      is.list(cluster_results) &&  all(sapply(cluster_results, is.data.frame)),
     " Cluster `evals` that are supported are only 'purity' and 'silhouette'" =
       all(metrics %in% supported_evals)
   )
