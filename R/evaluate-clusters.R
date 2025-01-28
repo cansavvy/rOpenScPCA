@@ -341,9 +341,6 @@ calculate_stability <- function(
 #' @examples
 #' \dontrun{
 #'
-#' # Setting the seed is a good idea
-#' set.seed(2024)
-#'
 #' # Calculate Principal Components
 #' pca_matrix <- reducedDim(sce_object, "PCA")
 #'
