@@ -347,7 +347,7 @@ calculate_stability <- function(
 #' # Calculate Principal Components
 #' pca_matrix <- reducedDim(sce_object, "PCA")
 #'
-#' # We can put in a single data frame of cluster results:
+#' # We can calculate a single data frame of cluster results:
 #' cluster_df <- calculate_clusters(
 #'   pca_matrix,
 #'   algorithm = "leiden",
