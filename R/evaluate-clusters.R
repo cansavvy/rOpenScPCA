@@ -368,7 +368,6 @@ calculate_stability <- function(
 #' # If we obtain a list of clusters like so...
 #' sweep_list <- sweep_clusters(
 #'   sce_object,
-#'   algorithm = "walktrap",
 #'   weighting = "jaccard",
 #'   nn = c(10, 15, 25),
 #'   resolution = c(0.75, 1),
