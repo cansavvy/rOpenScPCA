@@ -310,8 +310,8 @@ calculate_stability <- function(
 
 #' Evaluate cluster results
 #'
-#' This wrapper function can be used to evaluate clusters from a single clustering calculation or a list
-#' calculated using `sweep_clusters()` function.
+#' This wrapper function can be used to evaluate clusters from a single clustering
+#' calculation or a list calculated using `sweep_clusters()` function.
 #' Input should be be a data frame from a single `calculate_clusters()` call
 #' or a list of data frames with the resulting clusters from all parameter
 #' combinations provided to the `sweep_clusters()` function.
@@ -324,7 +324,8 @@ calculate_stability <- function(
 #'   are PCs and rows are cells. If a matrix is provided, it must have row names of cell
 #'   ids (e.g., barcodes).
 #' @param cluster_results A single data frame or list of data frames obtained from
-#'  `rOpenScPCA::calculate_clusters()` or `rOpenScPCA::sweep_clusters()` respectively. Each data frame in the list should contain
+#'  `rOpenScPCA::calculate_clusters()` or `rOpenScPCA::sweep_clusters()` respectively.
+#'   Each data frame in the list should contain
 #'   at least two columns: one representing unique cell ids, and one containing
 #'   cluster assignments. By default, these columns should be named `cell_id` and
 #'   `cluster` respectively, though this can be customized. The cell id column's
