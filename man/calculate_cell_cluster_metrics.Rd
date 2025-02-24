@@ -17,13 +17,13 @@ are PCs and rows are cells. If a matrix is provided, it must have row names of c
 ids (e.g., barcodes).}
 
 \item{cluster_results}{A single data frame or list of data frames obtained from
-`rOpenScPCA::sweep_clusters()`. Each data frame in the list should contains
-at least two columns: one representing unique cell ids, and one containing
-cluster assignments. By default, these columns should be named `cell_id` and
-`cluster` respectively, though this can be customized. The cell id column's
-values should match either the PC matrix row names, or the
-SingleCellExperiment/Seurat object cell ids. Typically this data frame will be
-output from the `rOpenScPCA::calculate_clusters()` function.}
+`rOpenScPCA::calculate_clusters()` or `rOpenScPCA::sweep_clusters()` respectively.
+ Each data frame in the list should contain
+ at least two columns: one representing unique cell ids, and one containing
+ cluster assignments. By default, these columns should be named `cell_id` and
+ `cluster` respectively, though this can be customized. The cell id column's
+ values should match either the PC matrix row names, or the
+ SingleCellExperiment/Seurat object cell ids.}
 
 \item{metrics}{Which metrics should be collected? Options are one or both of "purity" or "silhouette".
 Default is to collect both purity and silhouette.}
@@ -31,11 +31,10 @@ Default is to collect both purity and silhouette.}
 \value{
 An updated list of data frames with additional columns from running evaluation with
 `rOpenScPCA::calculate_silhouette()` and/or `rOpenScPCA::calculate_purity()`, based on
-  `calculate_silhouette()` functions output.
 }
 \description{
-This wrapper function can be used to evaluate clusters from a single clustering calculation or a list
-calculated using `sweep_clusters()` function.
+This wrapper function can be used to evaluate clusters from a single clustering
+calculation or a list calculated using `sweep_clusters()` function.
 Input should be be a data frame from a single `calculate_clusters()` call
 or a list of data frames with the resulting clusters from all parameter
 combinations provided to the `sweep_clusters()` function.
@@ -46,13 +45,10 @@ object provided.
 \examples{
 \dontrun{
 
-# Setting the seed is a good idea
-set.seed(2024)
-
 # Calculate Principal Components
 pca_matrix <- reducedDim(sce_object, "PCA")
 
-# We can put in a single data frame of cluster results:
+# We can calculate a single data frame of cluster results:
 cluster_df <- calculate_clusters(
   pca_matrix,
   algorithm = "leiden",
@@ -71,7 +67,6 @@ sweep_list_evaled <- calculate_cell_cluster_metrics(
 # If we obtain a list of clusters like so...
 sweep_list <- sweep_clusters(
   sce_object,
-  algorithm = "walktrap",
   weighting = "jaccard",
   nn = c(10, 15, 25),
   resolution = c(0.75, 1),
@@ -81,7 +76,7 @@ sweep_list <- sweep_clusters(
 # Then we can evaluate these cluster stats with
 # calculate_cell_cluster_metrics:
 sweep_list_evaled <- calculate_cell_cluster_metrics(
-  x = pc_mat,
+  x = pca_matrix,
   cluster_results = sweep_list
 )
 }
