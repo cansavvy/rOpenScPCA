@@ -400,15 +400,13 @@ calculate_cell_cluster_metrics <- function(x,
         if ("purity" %in% metrics) {
           df <- calculate_purity(
             x = x,
-            cluster_df = df,
-            ...
+            cluster_df = df
           )
         }
         if ("silhouette" %in% metrics) {
           df <- calculate_silhouette(
             x = x,
-            cluster_df = df,
-            ...
+            cluster_df = df
           )
         }
         return(df)
