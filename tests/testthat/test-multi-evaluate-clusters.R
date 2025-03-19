@@ -18,7 +18,7 @@ test_that("test single calculate_cell_cluster_metrics()", {
     cluster_results = cluster_df
   )
 
-  # Expect a list returned
+  # Expect a data frame returned
   testthat::expect_true(class(single_evaled) == "data.frame")
 
   # Expecting these columns to show up
@@ -53,17 +53,22 @@ test_that("test multiple calculate_cell_cluster_metrics()", {
   # Expect a list returned
   testthat::expect_type(sweep_list_evaled, "list")
 
-  # Expecting these columns to show up
-  testthat::expect_named(
-    sweep_list_evaled[[1]],
-    c(
-      "cell_id", "cluster", "algorithm", "weighting", "nn", "purity",
-      "maximum_neighbor", "silhouette_other", "silhouette_width"
-    )
-  )
-
-  # Don't expect NAs in any of the data frames
-  purrr::map(sweep_list_evaled, ~ testthat::expect_true(all(!is.na(.))))
+ sweep_list_evaled |>
+  purrr::map(
+    \(df_evaled) {
+    
+      # first test expected columns
+      testthat::expect_named(
+        df_evaled,
+        c(
+          "cell_id", "cluster", "algorithm", "weighting", "nn", "purity",
+          "maximum_neighbor", "silhouette_other", "silhouette_width"
+        )
+      )
+      
+      # test there are no NAs
+      testthat::expect_true(all(!is.na(df_evaled)))
+    })
 
   # Expect a list of length three
   testthat::expect_length(sweep_list_evaled, 3)
