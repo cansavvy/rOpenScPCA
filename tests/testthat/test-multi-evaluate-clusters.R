@@ -64,7 +64,6 @@ test_that("test multiple calculate_cell_cluster_metrics()", {
             "maximum_neighbor", "silhouette_other", "silhouette_width"
           )
         )
-
         # test there are no NAs
         testthat::expect_true(all(!is.na(df_evaled)))
       }
@@ -72,4 +71,32 @@ test_that("test multiple calculate_cell_cluster_metrics()", {
 
   # Expect a list of length three
   testthat::expect_length(sweep_list_evaled, 3)
+})
+
+
+test_that("test single entry of calculate_cell_cluster_metrics()", {
+  sweep_list <- sweep_clusters(
+    sce_object,
+    algorithm = "walktrap",
+    weighting = "jaccard",
+    nn = 10,
+    resolution = 0.75,
+    seed = 9
+  )
+
+  sweep_list_evaled <- calculate_cell_cluster_metrics(
+    x = pc_mat,
+    cluster_results = sweep_list
+  )
+
+  # Expect a list returned
+  testthat::expect_type(sweep_list_evaled, "list")
+
+  testthat::expect_named(
+    sweep_list_evaled,
+    c(
+      "cell_id", "cluster", "algorithm", "weighting", "nn", "purity",
+      "maximum_neighbor", "silhouette_other", "silhouette_width"
+    )
+  )
 })
