@@ -1,4 +1,3 @@
-
 sce_object <- readRDS(test_path("data", "scpca_sce.rds"))
 
 # Calculate Principal Components
