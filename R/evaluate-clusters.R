@@ -376,6 +376,15 @@ calculate_stability <- function(
 #'   x = pca_matrix,
 #'   cluster_results = sweep_list
 #' )
+#'
+#'
+#'
+#' # If we only want one or the other metric calculated we can use:
+#' sweep_list_evaled <- calculate_cell_cluster_metrics(
+#'   x = pca_matrix,
+#'   cluster_results = sweep_list,
+#'   metrics = "purity"
+#' )
 #' }
 #'
 calculate_cell_cluster_metrics <- function(x,

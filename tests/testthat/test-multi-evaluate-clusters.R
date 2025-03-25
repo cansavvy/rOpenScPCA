@@ -3,6 +3,16 @@ sce_object <- readRDS(test_path("data", "scpca_sce.rds"))
 # Calculate Principal Components
 pc_mat <- reducedDim(sce_object, "PCA")
 
+# Run a bunch of clustering options with sweep_clusters
+sweep_list <- sweep_clusters(
+  sce_object,
+  algorithm = "walktrap",
+  weighting = "jaccard",
+  nn = c(10, 15, 25),
+  resolution = c(0.75, 1),
+  seed = 9
+)
+
 test_that("test single calculate_cell_cluster_metrics()", {
   cluster_df <- calculate_clusters(
     pc_mat,
@@ -34,15 +44,6 @@ test_that("test single calculate_cell_cluster_metrics()", {
 })
 
 test_that("test multiple calculate_cell_cluster_metrics()", {
-  sweep_list <- sweep_clusters(
-    sce_object,
-    algorithm = "walktrap",
-    weighting = "jaccard",
-    nn = c(10, 15, 25),
-    resolution = c(0.75, 1),
-    seed = 9
-  )
-
   sweep_list_evaled <- calculate_cell_cluster_metrics(
     x = pc_mat,
     cluster_results = sweep_list
@@ -72,29 +73,50 @@ test_that("test multiple calculate_cell_cluster_metrics()", {
 })
 
 
-test_that("test single entry of calculate_cell_cluster_metrics()", {
-  sweep_list <- sweep_clusters(
-    sce_object,
-    algorithm = "walktrap",
-    weighting = "jaccard",
-    nn = 10,
-    resolution = 0.75,
-    seed = 9
-  )
-
+test_that("test 'metrics = purity' argument of calculate_cell_cluster_metrics()", {
   sweep_list_evaled <- calculate_cell_cluster_metrics(
     x = pc_mat,
-    cluster_results = sweep_list
+    cluster_results = sweep_list,
+    metrics = "purity"
   )
 
   # Expect a list returned
   testthat::expect_type(sweep_list_evaled, "list")
 
-  testthat::expect_named(
-    sweep_list_evaled,
-    c(
-      "cell_id", "cluster", "algorithm", "weighting", "nn", "purity",
-      "maximum_neighbor", "silhouette_other", "silhouette_width"
+  sweep_list_evaled |>
+    purrr::map(
+      \(df_evaled) {
+        testthat::expect_named(
+          df_evaled,
+          c(
+            "cell_id", "cluster", "algorithm", "weighting", "nn", "purity",
+            "maximum_neighbor"
+          )
+        )
+      }
     )
+})
+
+test_that("test 'metrics = silhouette' argument of calculate_cell_cluster_metrics()", {
+  sweep_list_evaled <- calculate_cell_cluster_metrics(
+    x = pc_mat,
+    cluster_results = sweep_list,
+    metrics = "silhouette"
   )
+
+  # Expect a list returned
+  testthat::expect_type(sweep_list_evaled, "list")
+
+  sweep_list_evaled |>
+    purrr::map(
+      \(df_evaled) {
+        testthat::expect_named(
+          df_evaled,
+          c(
+            "cell_id", "cluster", "algorithm", "weighting", "nn", "silhouette_other",
+            "silhouette_width"
+          )
+        )
+      }
+    )
 })
