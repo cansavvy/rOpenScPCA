@@ -1,4 +1,3 @@
-set.seed(2024)
 
 sce_object <- readRDS(test_path("data", "scpca_sce.rds"))
 
